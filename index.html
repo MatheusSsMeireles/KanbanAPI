@@ -8,7 +8,7 @@
     <!-- Favicon da LexSec -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (Framework de Estilo Base) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -29,76 +29,8 @@
     <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <style>
-        /* Ajustes base para o layout em Tela Cheia */
-        body {
-            margin: 0;
-            padding-top: 72px; /* Altura do Header */
-            background-color: #ffffff;
-            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-        
-        html.dark body {
-            background-color: #111827;
-        }
-
-        /* Header Fixo */
-        #lexsec-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 72px;
-            z-index: 9999;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-        }
-
-        /* Oculta a barra original do Scalar */
-        .scalar-api-client-header {
-            display: none !important;
-        }
-
-        /* Loading animado */
-        .loader-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: calc(100vh - 72px);
-        }
-        .spinner {
-            border: 4px solid rgba(37, 99, 235, 0.1);
-            border-left-color: #2563eb;
-            border-radius: 50%;
-            width: 48px;
-            height: 48px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* OVERRIDES DO SCALAR PARA DARK MODE */
-        :root {
-            --scalar-color-accent: #2563eb;
-            --scalar-button-1: #2563eb;
-            --scalar-button-1-hover: #1d4ed8;
-        }
-        
-        html.dark {
-            --scalar-color-accent: #3b82f6 !important;
-            --scalar-button-1: #3b82f6 !important;
-            --scalar-button-1-hover: #60a5fa !important;
-            --scalar-color-background-1: #111827 !important;
-            --scalar-color-background-2: #1f2937 !important;
-            --scalar-color-background-3: #374151 !important;
-            --scalar-color-text-1: #f3f4f6 !important;
-            --scalar-color-text-2: #d1d5db !important;
-            --scalar-color-text-3: #9ca3af !important;
-            --scalar-color-border: #374151 !important;
-            --scalar-sidebar-background-1: #111827 !important;
-            --scalar-sidebar-color-1: #f3f4f6 !important;
-            --scalar-sidebar-border-color: #374151 !important;
-        }
-    </style>
+    <!-- SEU CSS CUSTOMIZADO (Contém os overrides do Scalar) -->
+    <link rel="stylesheet" href="style.css" />
 
     <!-- INICIALIZAÇÃO IMEDIATA DO TEMA PARA EVITAR PISCAR A TELA -->
     <script>
@@ -109,12 +41,13 @@
         }
     </script>
 </head>
-<body class="text-gray-800 dark:text-gray-200 transition-colors duration-200">
+<body class="text-gray-800 dark:text-gray-200 transition-colors duration-200 bg-white dark:bg-gray-900 m-0 pt-[72px] font-sans">
 
-    <!-- HEADER LEXSEC -->
-    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
+    <!-- HEADER LEXSEC FIXO -->
+    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200 fixed top-0 left-0 right-0 h-[72px] z-[9999] shadow-sm">
         <div class="h-full px-4 md:px-6 flex items-center justify-between">
             
+            <!-- Logo e Navegação de APIs -->
             <div class="flex items-center space-x-4">
                 <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-100 hidden sm:block">
                     <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
@@ -130,6 +63,7 @@
                 </div>
             </div>
             
+            <!-- Controles do Usuário (URL + Dark Mode) -->
             <div class="flex items-center space-x-3 md:space-x-4">
                 <form id="url-form" class="hidden md:flex items-center space-x-2 relative group">
                     <div class="relative">
@@ -150,12 +84,13 @@
                 </form>
 
                 <!-- Botão Mobile para exibir input -->
-                <button onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400">
+                <button type="button" onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400 focus:outline-none">
                     <i class="fa-solid fa-link"></i>
                 </button>
 
                 <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
 
+                <!-- Toggle de Tema -->
                 <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none">
                     <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
                     <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
@@ -164,21 +99,19 @@
         </div>
     </header>
 
-    <!-- CONTAINER DO LOADER E SCALAR -->
-    <div id="loader" class="loader-container">
-        <div class="spinner mb-4"></div>
+    <!-- CONTAINER DO LOADER -->
+    <div id="loader" class="flex flex-col items-center justify-center h-[calc(100vh-72px)]">
+        <!-- Spinner animado via Tailwind -->
+        <div class="border-4 border-brand-500/10 border-l-brand-500 rounded-full w-12 h-12 animate-spin mb-4"></div>
         <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Montando documentação...</p>
     </div>
 
-    <!-- O SCALAR SERÁ MONTADO AQUI DENTRO -->
+    <!-- O SCALAR SERÁ MONTADO AQUI DENTRO PELO JAVASCRIPT -->
     <div id="api-container"></div>
 
-    <script>
-        // ==========================================
-        // DADOS COMPLETOS DA SUA API (API KANBAN)
-        // ==========================================
-        const KANBAN_SPEC = {
-          "openapi": "3.1.0",
-          "info": {
-            "title": "LexSec | Kanban Extension API",
-            "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
+    <!-- SEU JAVASCRIPT CUSTOMIZADO -->
+    <!-- Ele será responsável por popular a API, esconder o Loader e ligar os eventos de botões -->
+    <script src="script.js"></script>
+
+</body>
+</html>
