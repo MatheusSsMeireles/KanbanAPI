@@ -1,104 +1,32 @@
-/* Ajustes base para o layout em ambos os temas */
-.tab-content { display: none; }
-.tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
+/* Oculta a barra original do Scalar para usarmos o nosso Header LexSec */
+.scalar-api-client-header {
+    display: none !important;
 }
 
-.swagger-ui .wrapper { padding: 0; max-width: 100%; }
-.swagger-ui .info { margin: 20px 0; }
-.swagger-ui .scheme-container { background: transparent; box-shadow: none; padding: 20px 0; }
-
-/* ===============================================
- OVERRIDES PARA O DARK MODE DO SWAGGER UI
-===============================================
-*/
-html.dark .swagger-ui {
-    color: #e5e7eb;
+/* OVERRIDES DO SCALAR PARA TEMA LIGHT/AZUL LEXSEC */
+:root {
+    --scalar-color-accent: #2563eb;
+    --scalar-button-1: #2563eb;
+    --scalar-button-1-hover: #1d4ed8;
 }
 
-html.dark .swagger-ui .info h1,
-html.dark .swagger-ui .info h2,
-html.dark .swagger-ui .info h3,
-html.dark .swagger-ui .info h4,
-html.dark .swagger-ui .info p,
-html.dark .swagger-ui .info a,
-html.dark .swagger-ui .title,
-html.dark .swagger-ui .opblock-tag,
-html.dark .swagger-ui .opblock-summary-method,
-html.dark .swagger-ui .opblock-summary-path,
-html.dark .swagger-ui .opblock-summary-description,
-html.dark .swagger-ui .parameter__name,
-html.dark .swagger-ui .parameter__type,
-html.dark .swagger-ui .parameter__in,
-html.dark .swagger-ui .tab-header .tab-item,
-html.dark .swagger-ui .response-col_status,
-html.dark .swagger-ui .response-col_description {
-    color: #e5e7eb !important;
-}
-
-html.dark .swagger-ui .opblock {
-    background: rgba(31, 41, 55, 0.5);
-    border-color: #374151;
-}
-
-html.dark .swagger-ui .opblock .opblock-section-header {
-    background: #1f2937;
-    border-color: #374151;
-}
-
-html.dark .swagger-ui .scheme-container {
-    border-bottom: 1px solid #374151;
-}
-
-html.dark .swagger-ui section.models {
-    border-color: #374151;
-}
-
-html.dark .swagger-ui section.models h4 {
-    color: #e5e7eb;
-    border-bottom-color: #374151;
-}
-
-html.dark .swagger-ui .model-box {
-    background: #1f2937;
-}
-
-html.dark .swagger-ui .opblock-body select,
-html.dark .swagger-ui .opblock-body input {
-    background: #374151;
-    color: #f3f4f6;
-    border-color: #4b5563;
-}
-
-html.dark .swagger-ui .btn {
-    color: #e5e7eb;
-    border-color: #4b5563;
-}
-
-html.dark .swagger-ui .btn.authorize {
-    color: #10b981;
-    border-color: #10b981;
-}
-
-html.dark .swagger-ui .dialog-ux .modal-ux {
-    background: #1f2937;
-    border: 1px solid #374151;
-    color: #e5e7eb;
-}
-
-html.dark .swagger-ui .dialog-ux .modal-ux-header h3 {
-    color: #f3f4f6;
-}
-
-html.dark .swagger-ui .dialog-ux .modal-ux-content h4 {
-    color: #e5e7eb;
-}
-
-html.dark .swagger-ui input[type=text], html.dark .swagger-ui input[type=password] {
-    background-color: #374151;
-    color: #fff;
-    border: 1px solid #4b5563;
+/* OVERRIDES DO SCALAR PARA DARK MODE (Ativa magicamente o modo escuro no Scalar) */
+html.dark {
+    --scalar-color-accent: #3b82f6 !important;
+    --scalar-button-1: #3b82f6 !important;
+    --scalar-button-1-hover: #60a5fa !important;
+    
+    --scalar-color-background-1: #111827 !important;
+    --scalar-color-background-2: #1f2937 !important;
+    --scalar-color-background-3: #374151 !important;
+    
+    --scalar-color-text-1: #f3f4f6 !important;
+    --scalar-color-text-2: #d1d5db !important;
+    --scalar-color-text-3: #9ca3af !important;
+    
+    --scalar-color-border: #374151 !important;
+    
+    --scalar-sidebar-background-1: #111827 !important;
+    --scalar-sidebar-color-1: #f3f4f6 !important;
+    --scalar-sidebar-border-color: #374151 !important;
 }
