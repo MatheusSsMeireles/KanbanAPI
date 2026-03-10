@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LexSec - Chatwoot Dev Explorer</title>
     
+    <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,7 +15,7 @@
                 extend: {
                     colors: {
                         brand: {
-                            500: '#2563eb', // Azul padrão
+                            500: '#2563eb',
                             600: '#1d4ed8',
                         }
                     }
@@ -76,7 +78,7 @@
                         
                         <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
                             <h3 class="font-bold text-blue-800 dark:text-blue-300 mb-1"><i class="fa-solid fa-diagram-project"></i> API Kanban (Extensão)</h3>
-                            <p class="text-blue-900 dark:text-blue-200 text-xs mt-1">Aborda a gestão de Funis, Cards, Checklist e Notas. Teste-a diretamente na aba ao lado.</p>
+                            <p class="text-blue-900 dark:text-blue-200 text-xs mt-1">Aborda a gestão de Funis, Cards, Checklist e Notas. Teste-a diretamente na aba ao lado (os endpoints já estão carregados).</p>
                         </div>
 
                         <div class="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-lg border border-emerald-100 dark:border-emerald-800">
@@ -92,7 +94,7 @@
 
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
                     <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Configurar Servidor</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Insira a URL base para gerar o testador interativo.</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Insira a URL base do seu Chatwoot para gerar o testador interativo na aba ao lado.</p>
 
                     <form id="setup-form" class="space-y-4">
                         <div>
@@ -103,7 +105,7 @@
 
                         <div class="pt-4 flex items-center justify-between">
                             <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm flex items-center">
-                                <i class="fa-solid fa-bolt mr-2"></i> Injetar Configuração
+                                <i class="fa-solid fa-bolt mr-2"></i> Aplicar Servidor
                             </button>
                             <span id="config-status" class="text-sm font-medium text-green-600 dark:text-green-400 hidden"><i class="fa-solid fa-check"></i> Salvo!</span>
                         </div>
@@ -114,7 +116,7 @@
 
         <section id="kanban" class="tab-content bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 md:p-6 min-h-[600px] transition-colors duration-300">
             <div id="swagger-error" class="hidden bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 mb-4">
-                <i class="fa-solid fa-triangle-exclamation mr-2"></i> <strong>Erro:</strong> Não foi possível carregar o arquivo <code>api-1.json</code>.
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> <strong>Erro:</strong> Ocorreu um problema ao renderizar a documentação.
             </div>
             
             <div id="swagger-ui"></div>
