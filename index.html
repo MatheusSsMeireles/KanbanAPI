@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatwoot Developer Explorer | Kanban & Oficial</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        /* Ajustes finos para que o Swagger UI conviva bem com o Tailwind */
+        .swagger-ui .wrapper { padding: 0; max-width: 100%; }
+        .swagger-ui .info { margin: 20px 0; }
+        .swagger-ui .scheme-container { background: transparent; box-shadow: none; border-bottom: 1px solid #e5e7eb; padding: 20px 0; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-blue-600 text-white shadow-md">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <i class="fa-solid fa-server text-2xl"></i>
+                <h1 class="text-2xl font-bold tracking-tight">Chatwoot Dev Explorer</h1>
+            </div>
+            <p class="text-sm opacity-80 hidden md:block">Plataforma Segura de Testes e Documentação</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        
+        <nav class="flex space-x-2 border-b border-gray-200 mb-8 overflow-x-auto">
+            <button onclick="switchTab('config')" id="btn-config" class="tab-btn px-6 py-3 text-sm font-medium text-blue-600 border-b-2 border-blue-600 flex items-center whitespace-nowrap">
+                <i class="fa-solid fa-gear mr-2"></i> Explicação & Configuração
+            </button>
+            <button onclick="switchTab('kanban')" id="btn-kanban" class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 hover:text-blue-600 hover:border-b-2 hover:border-blue-300 transition-colors flex items-center whitespace-nowrap">
+                <i class="fa-solid fa-diagram-project mr-2"></i> Testador API Kanban
+            </button>
+            <button onclick="switchTab('official')" id="btn-official" class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 hover:text-blue-600 hover:border-b-2 hover:border-blue-300 transition-colors flex items-center whitespace-nowrap">
+                <i class="fa-solid fa-book-bookmark mr-2"></i> API Oficial Chatwoot
+            </button>
+        </nav>
+
+        <section id="config" class="tab-content active">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Entendendo as APIs</h2>
+                    
+                    <div class="space-y-4 text-sm text-gray-600">
+                        <p>Bem-vindo ao <strong>Chatwoot Dev Explorer</strong>. Esta ferramenta foi projetada para que você possa entender e testar as capacidades do seu Chatwoot de forma centralizada.</p>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <h3 class="font-bold text-blue-800 mb-1"><i class="fa-solid fa-diagram-project"></i> A API Kanban (Extensão)</h3>
+                            <p class="text-blue-900 text-xs mt-1">É a documentação customizada que aborda a gestão de Funis de Vendas, movimentação de Cards (Kanban Items), Checklist, Notas, e Mensagens Agendadas. Você testará essa API diretamente aqui.</p>
+                        </div>
+
+                        <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-100">
+                            <h3 class="font-bold text-emerald-800 mb-1"><i class="fa-solid fa-book"></i> A API Oficial</h3>
+                            <p class="text-emerald-900 text-xs mt-1">Trata do "Core" do sistema: criação de contatos, caixas de entrada (Inboxes), troca de mensagens nativas e relatórios gerais. Direcionamos você à fonte oficial para estas consultas.</p>
+                        </div>
+
+                        <div class="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-yellow-800">
+                            <strong><i class="fa-solid fa-shield-halved"></i> Segurança 100% Local:</strong> Suas credenciais (URL e Token) nunca são enviadas para nenhum servidor externo. Elas são manipuladas exclusivamente pelo seu navegador (Client-Side) para realizar as chamadas diretas para a sua própria instância do Chatwoot.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">Configurar Ambiente de Testes</h2>
+                    <p class="text-sm text-gray-500 mb-6">Para testar a API do Kanban na próxima aba, insira os dados do seu servidor. O Swagger será gerado apontando para sua infraestrutura.</p>
+
+                    <form id="setup-form" onsubmit="applyConfig(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">URL do seu Chatwoot</label>
+                            <input type="url" id="base_url" placeholder="Ex: https://chatwoot.suaempresa.com.br" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow">
+                            <p class="text-xs text-gray-400 mt-1">Sem barra no final.</p>
+                        </div>
+
+                        <div class="pt-4 flex items-center justify-between">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm flex items-center">
+                                <i class="fa-solid fa-check mr-2"></i> Aplicar e Gerar Testador
+                            </button>
+                            <span id="config-status" class="text-sm font-medium text-green-600 hidden">Configuração salva!</span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="kanban" class="tab-content bg-white rounded-xl shadow-sm border border-gray-100 p-2 md:p-6 min-h-[600px]">
+            <div id="swagger-error" class="hidden bg-red-50 p-4 rounded-lg border border-red-200 text-red-800 mb-4">
+                <i class="fa-solid fa-triangle-exclamation mr-2"></i> <strong>Erro:</strong> Não foi possível carregar o arquivo <code>api-1.json</code>. Certifique-se de que ele está salvo na mesma pasta que este arquivo <code>index.html</code>.
+            </div>
+            
+            <div id="swagger-ui"></div>
+            
+            <div id="swagger-placeholder" class="text-center py-20 text-gray-400">
+                <i class="fa-solid fa-flask text-4xl mb-3 opacity-50"></i>
+                <p>Configure a sua URL na aba "Explicação & Configuração" para ativar o testador.</p>
+            </div>
+        </section>
+
+        <section id="official" class="tab-content">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10 text-center max-w-3xl mx-auto">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-solid fa-book-open-reader text-3xl text-blue-600"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Documentação Oficial do Chatwoot</h2>
+                <p class="text-gray-600 mb-8 leading-relaxed">
+                    A arquitetura base do Chatwoot (Contatos, Caixas de Entrada, Troca de Mensagens Nativas, Webhooks e Autenticação SS0) deve sempre ser consultada no repositório oficial. Eles mantêm a documentação estrita atualizada a cada nova release da plataforma.
+                </p>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <div class="border rounded-lg p-4 text-left">
+                        <i class="fa-solid fa-users text-blue-500 mb-2 text-xl"></i>
+                        <h4 class="font-bold text-gray-800">Contatos e Interações</h4>
+                        <p class="text-xs text-gray-500 mt-1">Crie, edite e vincule contatos às conversas em todos os canais integrados.</p>
+                    </div>
+                    <div class="border rounded-lg p-4 text-left">
+                        <i class="fa-solid fa-inbox text-blue-500 mb-2 text-xl"></i>
+                        <h4 class="font-bold text-gray-800">Inboxes</h4>
+                        <p class="text-xs text-gray-500 mt-1">Gestão de caixas de entrada de WhatsApp, Instagram, Email, Web Widget, etc.</p>
+                    </div>
+                </div>
+
+                <a href="https://chatwoot.com/developers/api/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-gray-900 hover:bg-gray-800 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md">
+                    Acessar API Oficial Chatwoot <i class="fa-solid fa-arrow-up-right-from-square ml-3"></i>
+                </a>
+                <p class="text-xs text-gray-400 mt-4">Abre em uma nova guia de forma segura.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+        <div class="container mx-auto px-6 py-4 text-center text-sm text-gray-500 flex flex-col md:flex-row justify-between items-center">
+            <p>&copy; 2026 Dev Explorer. Operando estritamente local.</p>
+            <p class="mt-2 md:mt-0">Ambiente de Diagnóstico e Desenvolvimento</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
+    
+    <script>
+        // Lógica de Tabs
+        function switchTab(tabId) {
+            // Oculta todas as sections
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            // Reseta estilo dos botões
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('text-blue-600', 'border-b-2', 'border-blue-600');
+                el.classList.add('text-gray-500');
+            });
+
+            // Ativa section correta
+            document.getElementById(tabId).classList.add('active');
+            
+            // Ativa botão correspondente
+            const activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.remove('text-gray-500');
+            activeBtn.classList.add('text-blue-600', 'border-b-2', 'border-blue-600');
+        }
+
+        // Recupera URL do LocalStorage se existir ao carregar
+        window.onload = () => {
+            const savedUrl = localStorage.getItem('chatwoot_base_url');
+            if (savedUrl) {
+                document.getElementById('base_url').value = savedUrl;
+                // Carrega o Swagger direto se já tiver configuração
+                initSwagger(savedUrl);
+            }
+        };
+
+        // Lógica de Formulário e Injeção Dinâmica
+        async function applyConfig(e) {
+            e.preventDefault();
+            
+            const baseUrl = document.getElementById('base_url').value.trim();
+            localStorage.setItem('chatwoot_base_url', baseUrl);
+
+            // Feedback visual
+            const statusLabel = document.getElementById('config-status');
+            statusLabel.classList.remove('hidden');
+            setTimeout(() => statusLabel.classList.add('hidden'), 3000);
+
+            await initSwagger(baseUrl);
+            
+            // Muda para a aba do Kanban para o usuário testar
+            switchTab('kanban');
+        }
+
+        // Função principal que lê o JSON e monta o Swagger UI modificado
+        async function initSwagger(baseUrl) {
+            document.getElementById('swagger-placeholder').style.display = 'none';
+            document.getElementById('swagger-error').classList.add('hidden');
+            
+            try {
+                // Busca o arquivo JSON local
+                const response = await fetch('api-1.json');
+                
+                if (!response.ok) throw new Error("Não encontrou o arquivo JSON");
+                
+                const specData = await response.json();
+
+                // >>> MAGIA AQUI <<<
+                // Sobrescreve a URL base da documentação com o servidor do usuário
+                specData.servers = [
+                    {
+                        url: `${baseUrl.replace(/\/$/, '')}/api/v1`,
+                        description: "Seu Servidor Chatwoot Customizado"
+                    }
+                ];
+
+                // Renderiza o Swagger UI com o objeto alterado em tempo real
+                window.ui = SwaggerUIBundle({
+                    spec: specData, // Usa o objeto ao invés da URL
+                    dom_id: '#swagger-ui',
+                    deepLinking: true,
+                    presets: [
+                        SwaggerUIBundle.presets.apis,
+                        SwaggerUIStandalonePreset
+                    ],
+                    plugins: [
+                        SwaggerUIBundle.plugins.DownloadUrl
+                    ],
+                    layout: "BaseLayout",
+                    // Configuração para injetar token via interface padrão de autorização
+                    onComplete: function() {
+                        console.log("Swagger Kanban carregado com sucesso!");
+                    }
+                });
+            } catch (error) {
+                console.error("Erro ao montar o Swagger UI:", error);
+                document.getElementById('swagger-error').classList.remove('hidden');
+                document.getElementById('swagger-placeholder').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
