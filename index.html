@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LexSec - Chatwoot Dev Explorer</title>
     
+    <!-- Favicon da LexSec -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
+    <!-- Tailwind CSS (Design) e Configuração de Dark Mode -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,14 +26,65 @@
         }
     </script>
     
+    <!-- Swagger UI (Testador de API) -->
     <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
     
+    <!-- FontAwesome (Ícones) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <link rel="stylesheet" href="style.css" />
+    <!-- CSS Customizado (Embutido para funcionar perfeitamente no GitHub Pages em 1 arquivo) -->
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .swagger-ui .wrapper { padding: 0; max-width: 100%; }
+        .swagger-ui .info { margin: 20px 0; }
+        .swagger-ui .scheme-container { background: transparent; box-shadow: none; padding: 20px 0; }
+
+        /* OVERRIDES PARA O DARK MODE DO SWAGGER UI */
+        html.dark .swagger-ui { color: #e5e7eb; }
+        html.dark .swagger-ui .info h1,
+        html.dark .swagger-ui .info h2,
+        html.dark .swagger-ui .info h3,
+        html.dark .swagger-ui .info h4,
+        html.dark .swagger-ui .info p,
+        html.dark .swagger-ui .info a,
+        html.dark .swagger-ui .title,
+        html.dark .swagger-ui .opblock-tag,
+        html.dark .swagger-ui .opblock-summary-method,
+        html.dark .swagger-ui .opblock-summary-path,
+        html.dark .swagger-ui .opblock-summary-description,
+        html.dark .swagger-ui .parameter__name,
+        html.dark .swagger-ui .parameter__type,
+        html.dark .swagger-ui .parameter__in,
+        html.dark .swagger-ui .tab-header .tab-item,
+        html.dark .swagger-ui .response-col_status,
+        html.dark .swagger-ui .response-col_description { color: #e5e7eb !important; }
+        html.dark .swagger-ui .opblock { background: rgba(31, 41, 55, 0.5); border-color: #374151; }
+        html.dark .swagger-ui .opblock .opblock-section-header { background: #1f2937; border-color: #374151; }
+        html.dark .swagger-ui .scheme-container { border-bottom: 1px solid #374151; }
+        html.dark .swagger-ui section.models { border-color: #374151; }
+        html.dark .swagger-ui section.models h4 { color: #e5e7eb; border-bottom-color: #374151; }
+        html.dark .swagger-ui .model-box { background: #1f2937; }
+        html.dark .swagger-ui .opblock-body select,
+        html.dark .swagger-ui .opblock-body input,
+        html.dark .swagger-ui .opblock-body textarea { background: #374151; color: #f3f4f6; border-color: #4b5563; }
+        html.dark .swagger-ui .btn { color: #e5e7eb; border-color: #4b5563; }
+        html.dark .swagger-ui .btn.authorize { color: #10b981; border-color: #10b981; }
+        html.dark .swagger-ui .dialog-ux .modal-ux { background: #1f2937; border: 1px solid #374151; color: #e5e7eb; }
+        html.dark .swagger-ui .dialog-ux .modal-ux-header h3 { color: #f3f4f6; }
+        html.dark .swagger-ui .dialog-ux .modal-ux-content h4 { color: #e5e7eb; }
+        html.dark .swagger-ui input[type=text], html.dark .swagger-ui input[type=password] { background-color: #374151; color: #fff; border: 1px solid #4b5563; }
+    </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 font-sans min-h-screen flex flex-col transition-colors duration-300">
 
+    <!-- Header -->
     <header class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -45,6 +98,7 @@
             
             <div class="flex items-center space-x-4">
                 <p class="text-sm opacity-80 hidden md:block text-gray-600 dark:text-gray-300">Plataforma de Diagnóstico</p>
+                <!-- Botão de Tema -->
                 <button id="theme-toggle" class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500">
                     <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden"></i>
                     <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden"></i>
@@ -53,8 +107,10 @@
         </div>
     </header>
 
+    <!-- Main Content -->
     <main class="container mx-auto px-4 py-8 flex-grow">
         
+        <!-- Navegação (Tabs) -->
         <nav class="flex space-x-2 border-b border-gray-200 dark:border-gray-700 mb-8 overflow-x-auto">
             <button onclick="switchTab('config')" id="btn-config" class="tab-btn px-6 py-3 text-sm font-medium text-brand-600 dark:text-brand-500 border-b-2 border-brand-600 dark:border-brand-500 flex items-center whitespace-nowrap transition-colors">
                 <i class="fa-solid fa-gear mr-2"></i> Configuração
@@ -67,9 +123,11 @@
             </button>
         </nav>
 
+        <!-- Tab 1: Configuração e Explicações -->
         <section id="config" class="tab-content active">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 
+                <!-- Informações -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
                     <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Entendendo as APIs</h2>
                     
@@ -78,7 +136,7 @@
                         
                         <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
                             <h3 class="font-bold text-blue-800 dark:text-blue-300 mb-1"><i class="fa-solid fa-diagram-project"></i> API Kanban (Extensão)</h3>
-                            <p class="text-blue-900 dark:text-blue-200 text-xs mt-1">Aborda a gestão de Funis, Cards, Checklist e Notas. Teste-a diretamente na aba ao lado (os endpoints já estão carregados).</p>
+                            <p class="text-blue-900 dark:text-blue-200 text-xs mt-1">Aborda a gestão de Funis, Cards, Checklist e Notas. Teste-a diretamente na aba ao lado com a sua própria documentação 100% carregada.</p>
                         </div>
 
                         <div class="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-lg border border-emerald-100 dark:border-emerald-800">
@@ -92,6 +150,7 @@
                     </div>
                 </div>
 
+                <!-- Formulário de Config -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
                     <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Configurar Servidor</h2>
                     <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Insira a URL base do seu Chatwoot para gerar o testador interativo na aba ao lado.</p>
@@ -114,6 +173,7 @@
             </div>
         </section>
 
+        <!-- Tab 2: Testador Kanban (Swagger UI) -->
         <section id="kanban" class="tab-content bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 md:p-6 min-h-[600px] transition-colors duration-300">
             <div id="swagger-error" class="hidden bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 mb-4">
                 <i class="fa-solid fa-triangle-exclamation mr-2"></i> <strong>Erro:</strong> Ocorreu um problema ao renderizar a documentação.
@@ -127,6 +187,7 @@
             </div>
         </section>
 
+        <!-- Tab 3: API Oficial -->
         <section id="official" class="tab-content">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-10 text-center max-w-3xl mx-auto transition-colors duration-300">
                 <div class="w-20 h-20 bg-brand-100 dark:bg-brand-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -152,8 +213,16 @@
         </div>
     </footer>
 
+    <!-- Scripts (Swagger UI e Lógica Externa) -->
     <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
     <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+    
+    <script>
+        // ==========================================
+        // SEU JSON COMPLETO E INTACTO AQUI
+        // ==========================================
+        const swaggerSpecData = {
+          "openapi": "3.1.0",
+          "info": {
+            "title": "Chatwoot Kanban API",
+            "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
