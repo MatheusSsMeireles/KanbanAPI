@@ -8,7 +8,7 @@
     <!-- Favicon da LexSec -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <!-- Tailwind CSS para o Header -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -30,11 +30,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
     <style>
-        /* Ajustes Globais para convivência pacífica entre Tailwind e Scalar */
+        /* Ajustes base para o layout em Tela Cheia */
         body {
             margin: 0;
-            padding-top: 72px; /* Espaço exato do Header fixo */
+            padding-top: 72px; /* Altura do Header */
             background-color: #ffffff;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
         
         html.dark body {
@@ -49,15 +50,15 @@
             right: 0;
             height: 72px;
             z-index: 9999;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
         }
 
-        /* Ocultando a barra superior padrão do Scalar para usar a nossa exclusiva */
+        /* Oculta a barra original do Scalar */
         .scalar-api-client-header {
             display: none !important;
         }
 
-        /* Loading Spinner */
+        /* Loading animado */
         .loader-container {
             display: flex;
             flex-direction: column;
@@ -69,25 +70,23 @@
             border: 4px solid rgba(37, 99, 235, 0.1);
             border-left-color: #2563eb;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Tema Customizado Light pro Scalar focado no Azul da LexSec */
+        /* OVERRIDES DO SCALAR PARA DARK MODE */
         :root {
             --scalar-color-accent: #2563eb;
             --scalar-button-1: #2563eb;
             --scalar-button-1-hover: #1d4ed8;
         }
         
-        /* Tema Customizado Dark IMEDIATO pro Scalar */
         html.dark {
             --scalar-color-accent: #3b82f6 !important;
             --scalar-button-1: #3b82f6 !important;
             --scalar-button-1-hover: #60a5fa !important;
-            
             --scalar-color-background-1: #111827 !important;
             --scalar-color-background-2: #1f2937 !important;
             --scalar-color-background-3: #374151 !important;
@@ -95,91 +94,85 @@
             --scalar-color-text-2: #d1d5db !important;
             --scalar-color-text-3: #9ca3af !important;
             --scalar-color-border: #374151 !important;
-            
             --scalar-sidebar-background-1: #111827 !important;
             --scalar-sidebar-color-1: #f3f4f6 !important;
-            --scalar-sidebar-color-2: #d1d5db !important;
             --scalar-sidebar-border-color: #374151 !important;
         }
     </style>
-</head>
-<body class="text-gray-800 dark:text-gray-200 font-sans transition-colors duration-300">
 
-    <!-- HEADER CUSTOMIZADO LEXSEC -->
-    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+    <!-- INICIALIZAÇÃO IMEDIATA DO TEMA PARA EVITAR PISCAR A TELA -->
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="text-gray-800 dark:text-gray-200 transition-colors duration-200">
+
+    <!-- HEADER LEXSEC -->
+    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
         <div class="h-full px-4 md:px-6 flex items-center justify-between">
             
-            <!-- Logo e Título -->
             <div class="flex items-center space-x-4">
                 <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-100 hidden sm:block">
                     <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
                 </div>
                 
-                <!-- Navegação de APIs -->
                 <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <button onclick="switchApi('kanban')" id="btn-kanban" class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center">
-                        <i class="fa-solid fa-diagram-project mr-2"></i> Kanban API
+                    <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
                     </button>
-                    <button onclick="switchApi('official')" id="btn-official" class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <button onclick="changeTab('official')" id="tab-official" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
                         <i class="fa-solid fa-code mr-2"></i> API Oficial
                     </button>
                 </div>
             </div>
             
-            <!-- Controles Direitos: URL e Tema -->
             <div class="flex items-center space-x-3 md:space-x-4">
-                
-                <!-- Formulário de URL Customizada -->
                 <form id="url-form" class="hidden md:flex items-center space-x-2 relative group">
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <i class="fa-solid fa-link text-gray-400"></i>
                         </div>
-                        <input type="url" id="custom-url" placeholder="Opcional: URL da sua instância" 
+                        <input type="url" id="custom-url" placeholder="URL da sua instância (Opcional)" 
                             class="pl-10 pr-4 py-1.5 w-64 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow"
-                            title="Se deixado em branco, utilizaremos a URL oficial do Chatwoot.">
+                            title="Se em branco, usaremos a oficial. Ex: https://chatwoot.suaempresa.com">
                     </div>
                     <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        Aplicar
+                        Testar URL
                     </button>
-                    <!-- Tooltip de explicação -->
                     <div class="absolute top-12 right-0 w-72 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                         <p class="font-bold mb-1"><i class="fa-solid fa-shield-halved text-brand-400"></i> Teste Seguro Client-Side</p>
-                        <p class="text-gray-300 leading-relaxed">Insira a URL do seu Chatwoot (ex: https://sua URL) para testar os endpoints diretamente na sua infraestrutura. Nenhuma credencial sai do seu navegador.</p>
+                        <p class="text-gray-300">Insira a URL do seu Chatwoot para testar endpoints reais. Nenhuma credencial sai do seu navegador.</p>
                     </div>
                 </form>
 
-                <!-- Botão Mobile para abrir form -->
-                <button onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400">
-                    <i class="fa-solid fa-link"></i>
-                </button>
-
                 <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
 
-                <!-- Dark Mode Toggle -->
                 <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none">
-                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden"></i>
-                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden"></i>
+                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
+                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- CONTAINER DA DOCUMENTAÇÃO SCALAR -->
-    <main id="scalar-container" class="w-full">
-        <!-- Loader inicial -->
-        <div id="loader" class="loader-container">
-            <div class="spinner mb-4"></div>
-            <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Inicializando Motor Scalar...</p>
-        </div>
-    </main>
+    <!-- CONTAINER DO LOADER E SCALAR -->
+    <div id="loader" class="loader-container">
+        <div class="spinner mb-4"></div>
+        <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Montando documentação...</p>
+    </div>
+
+    <!-- O SCRIPT DO SCALAR SERÁ INJETADO AQUI DINAMICAMENTE -->
 
     <script>
         // ==========================================
-        // 1. DADOS NATIVOS (KANBAN API JSON COMPLETO)
+        // DADOS COMPLETOS DA SUA API (API KANBAN)
         // ==========================================
-        const kanbanSpecData = {
-          "openapi": "3.1.0",
-          "info": {
-            "title": "LexSec | Kanban Extension API",
-            "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
+        const KANBAN_SPEC = {
+  "openapi": "3.1.0",
+  "info": {
+    "title": "LexSec | Kanban Extension API",
+    "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
