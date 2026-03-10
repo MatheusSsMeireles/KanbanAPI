@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="light">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexSec - Chatwoot Dev Explorer</title>
+    <title>LexSec - Documentação de APIs Chatwoot</title>
     
     <!-- Favicon da LexSec -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <!-- Tailwind CSS (Design) e Configuração de Dark Mode -->
+    <!-- Tailwind CSS para o Header -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,80 +26,123 @@
         }
     </script>
     
-    <!-- Swagger UI (Testador de API) -->
-    <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui.css" />
-    
-    <!-- FontAwesome (Ícones) -->
+    <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- CSS Customizado (Embutido para funcionar perfeitamente no GitHub Pages em 1 arquivo) -->
     <style>
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* Ajustes Globais para convivência pacífica entre Tailwind e Scalar */
+        body {
+            margin: 0;
+            padding-top: 72px; /* Espaço exato do Header fixo */
+            background-color: #f9fafb;
+        }
+        
+        html.dark body {
+            background-color: #111827;
         }
 
-        .swagger-ui .wrapper { padding: 0; max-width: 100%; }
-        .swagger-ui .info { margin: 20px 0; }
-        .swagger-ui .scheme-container { background: transparent; box-shadow: none; padding: 20px 0; }
+        /* Header Fixo */
+        #lexsec-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            z-index: 9999;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
 
-        /* OVERRIDES PARA O DARK MODE DO SWAGGER UI */
-        html.dark .swagger-ui { color: #e5e7eb; }
-        html.dark .swagger-ui .info h1,
-        html.dark .swagger-ui .info h2,
-        html.dark .swagger-ui .info h3,
-        html.dark .swagger-ui .info h4,
-        html.dark .swagger-ui .info p,
-        html.dark .swagger-ui .info a,
-        html.dark .swagger-ui .title,
-        html.dark .swagger-ui .opblock-tag,
-        html.dark .swagger-ui .opblock-summary-method,
-        html.dark .swagger-ui .opblock-summary-path,
-        html.dark .swagger-ui .opblock-summary-description,
-        html.dark .swagger-ui .parameter__name,
-        html.dark .swagger-ui .parameter__type,
-        html.dark .swagger-ui .parameter__in,
-        html.dark .swagger-ui .tab-header .tab-item,
-        html.dark .swagger-ui .response-col_status,
-        html.dark .swagger-ui .response-col_description { color: #e5e7eb !important; }
-        html.dark .swagger-ui .opblock { background: rgba(31, 41, 55, 0.5); border-color: #374151; }
-        html.dark .swagger-ui .opblock .opblock-section-header { background: #1f2937; border-color: #374151; }
-        html.dark .swagger-ui .scheme-container { border-bottom: 1px solid #374151; }
-        html.dark .swagger-ui section.models { border-color: #374151; }
-        html.dark .swagger-ui section.models h4 { color: #e5e7eb; border-bottom-color: #374151; }
-        html.dark .swagger-ui .model-box { background: #1f2937; }
-        html.dark .swagger-ui .opblock-body select,
-        html.dark .swagger-ui .opblock-body input,
-        html.dark .swagger-ui .opblock-body textarea { background: #374151; color: #f3f4f6; border-color: #4b5563; }
-        html.dark .swagger-ui .btn { color: #e5e7eb; border-color: #4b5563; }
-        html.dark .swagger-ui .btn.authorize { color: #10b981; border-color: #10b981; }
-        html.dark .swagger-ui .dialog-ux .modal-ux { background: #1f2937; border: 1px solid #374151; color: #e5e7eb; }
-        html.dark .swagger-ui .dialog-ux .modal-ux-header h3 { color: #f3f4f6; }
-        html.dark .swagger-ui .dialog-ux .modal-ux-content h4 { color: #e5e7eb; }
-        html.dark .swagger-ui input[type=text], html.dark .swagger-ui input[type=password] { background-color: #374151; color: #fff; border: 1px solid #4b5563; }
+        /* Ocultando a barra superior padrão do Scalar para usar a nossa */
+        .scalar-api-client-header {
+            display: none !important;
+        }
+
+        /* Loading Spinner */
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: calc(100vh - 72px);
+        }
+        .spinner {
+            border: 4px solid rgba(37, 99, 235, 0.1);
+            border-left-color: #2563eb;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Tema Customizado pro Scalar focado no Azul da LexSec */
+        :root {
+            --scalar-color-accent: #2563eb;
+            --scalar-button-1: #2563eb;
+            --scalar-button-1-hover: #1d4ed8;
+        }
+        html.dark {
+            --scalar-color-accent: #3b82f6;
+            --scalar-button-1: #3b82f6;
+            --scalar-button-1-hover: #60a5fa;
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-200 font-sans min-h-screen flex flex-col transition-colors duration-300">
+<body class="text-gray-800 dark:text-gray-200 font-sans transition-colors duration-300">
 
-    <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
-        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+    <!-- HEADER CUSTOMIZADO LEXSEC -->
+    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+        <div class="h-full px-4 md:px-6 flex items-center justify-between">
+            
+            <!-- Logo e Título -->
             <div class="flex items-center space-x-4">
-                <div class="bg-white p-1.5 rounded-lg shadow-sm">
-                    <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-10 object-contain">
+                <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-100 hidden sm:block">
+                    <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
                 </div>
-                <h1 class="text-xl font-bold tracking-tight text-gray-800 dark:text-white hidden sm:block border-l-2 border-gray-300 dark:border-gray-600 pl-4">
-                    API Explorer
-                </h1>
+                
+                <!-- Navegação de APIs -->
+                <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
+                    <button onclick="switchApi('kanban')" id="btn-kanban" class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center">
+                        <i class="fa-solid fa-diagram-project mr-2"></i> Kanban API
+                    </button>
+                    <button onclick="switchApi('official')" id="btn-official" class="px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                        <i class="fa-solid fa-code mr-2"></i> API Oficial
+                    </button>
+                </div>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <p class="text-sm opacity-80 hidden md:block text-gray-600 dark:text-gray-300">Plataforma de Diagnóstico</p>
-                <!-- Botão de Tema -->
-                <button id="theme-toggle" class="p-2.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <!-- Controles Direitos: URL e Tema -->
+            <div class="flex items-center space-x-3 md:space-x-4">
+                
+                <!-- Formulário de URL Customizada -->
+                <form id="url-form" class="hidden md:flex items-center space-x-2 relative group">
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-link text-gray-400"></i>
+                        </div>
+                        <input type="url" id="custom-url" placeholder="Opcional: URL da sua instância" 
+                            class="pl-10 pr-4 py-1.5 w-64 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow"
+                            title="Se deixado em branco, utilizaremos a URL oficial do Chatwoot.">
+                    </div>
+                    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
+                        Aplicar
+                    </button>
+                    <!-- Tooltip de explicação -->
+                    <div class="absolute top-12 right-0 w-72 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                        <p class="font-bold mb-1"><i class="fa-solid fa-shield-halved text-brand-400"></i> Teste Seguro Client-Side</p>
+                        <p class="text-gray-300 leading-relaxed">Insira a URL do seu Chatwoot (ex: https://chat.empresa.com) para testar os endpoints diretamente na sua infraestrutura. Nenhuma credencial sai do seu navegador.</p>
+                    </div>
+                </form>
+
+                <!-- Botão Mobile para abrir form -->
+                <button onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-link"></i>
+                </button>
+
+                <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
+
+                <!-- Dark Mode Toggle -->
+                <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none">
                     <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden"></i>
                     <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden"></i>
                 </button>
@@ -107,122 +150,388 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 flex-grow">
-        
-        <!-- Navegação (Tabs) -->
-        <nav class="flex space-x-2 border-b border-gray-200 dark:border-gray-700 mb-8 overflow-x-auto">
-            <button onclick="switchTab('config')" id="btn-config" class="tab-btn px-6 py-3 text-sm font-medium text-brand-600 dark:text-brand-500 border-b-2 border-brand-600 dark:border-brand-500 flex items-center whitespace-nowrap transition-colors">
-                <i class="fa-solid fa-gear mr-2"></i> Configuração
-            </button>
-            <button onclick="switchTab('kanban')" id="btn-kanban" class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 hover:border-b-2 hover:border-brand-300 transition-colors flex items-center whitespace-nowrap">
-                <i class="fa-solid fa-diagram-project mr-2"></i> Testador API Kanban
-            </button>
-            <button onclick="switchTab('official')" id="btn-official" class="tab-btn px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-brand-600 dark:hover:text-brand-400 hover:border-b-2 hover:border-brand-300 transition-colors flex items-center whitespace-nowrap">
-                <i class="fa-solid fa-book-bookmark mr-2"></i> API Oficial
-            </button>
-        </nav>
-
-        <!-- Tab 1: Configuração e Explicações -->
-        <section id="config" class="tab-content active">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                
-                <!-- Informações -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
-                    <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Entendendo as APIs</h2>
-                    
-                    <div class="space-y-4 text-sm text-gray-600 dark:text-gray-300">
-                        <p>Esta ferramenta foi projetada para testar as capacidades do seu Chatwoot de forma centralizada e segura.</p>
-                        
-                        <div class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-                            <h3 class="font-bold text-blue-800 dark:text-blue-300 mb-1"><i class="fa-solid fa-diagram-project"></i> API Kanban (Extensão)</h3>
-                            <p class="text-blue-900 dark:text-blue-200 text-xs mt-1">Aborda a gestão de Funis, Cards, Checklist e Notas. Teste-a diretamente na aba ao lado com a sua própria documentação 100% carregada.</p>
-                        </div>
-
-                        <div class="bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-lg border border-emerald-100 dark:border-emerald-800">
-                            <h3 class="font-bold text-emerald-800 dark:text-emerald-300 mb-1"><i class="fa-solid fa-book"></i> API Oficial</h3>
-                            <p class="text-emerald-900 dark:text-emerald-200 text-xs mt-1">Core do sistema: contatos, inboxes e mensagens. Redirecionamento para a fonte oficial.</p>
-                        </div>
-
-                        <div class="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 rounded-lg border border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-300">
-                            <strong><i class="fa-solid fa-shield-halved"></i> 100% Client-Side:</strong> Suas credenciais (URL e Token) nunca saem do seu navegador.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Formulário de Config -->
-                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 transition-colors duration-300">
-                    <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-white border-b border-gray-200 dark:border-gray-700 pb-2">Configurar Servidor</h2>
-                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Insira a URL base do seu Chatwoot para gerar o testador interativo na aba ao lado.</p>
-
-                    <form id="setup-form" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">URL do seu Chatwoot</label>
-                            <input type="url" id="base_url" placeholder="Ex: https://chatwoot.lexsec.shop" required
-                                class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow">
-                        </div>
-
-                        <div class="pt-4 flex items-center justify-between">
-                            <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-6 rounded-lg transition-colors shadow-sm flex items-center">
-                                <i class="fa-solid fa-bolt mr-2"></i> Aplicar Servidor
-                            </button>
-                            <span id="config-status" class="text-sm font-medium text-green-600 dark:text-green-400 hidden"><i class="fa-solid fa-check"></i> Salvo!</span>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tab 2: Testador Kanban (Swagger UI) -->
-        <section id="kanban" class="tab-content bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-2 md:p-6 min-h-[600px] transition-colors duration-300">
-            <div id="swagger-error" class="hidden bg-red-50 dark:bg-red-900/30 p-4 rounded-lg border border-red-200 dark:border-red-800 text-red-800 dark:text-red-300 mb-4">
-                <i class="fa-solid fa-triangle-exclamation mr-2"></i> <strong>Erro:</strong> Ocorreu um problema ao renderizar a documentação.
-            </div>
-            
-            <div id="swagger-ui"></div>
-            
-            <div id="swagger-placeholder" class="text-center py-20 text-gray-400 dark:text-gray-500">
-                <i class="fa-solid fa-code text-4xl mb-3 opacity-50"></i>
-                <p>Configure a sua URL na aba "Configuração" para ativar o testador interativo.</p>
-            </div>
-        </section>
-
-        <!-- Tab 3: API Oficial -->
-        <section id="official" class="tab-content">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 md:p-10 text-center max-w-3xl mx-auto transition-colors duration-300">
-                <div class="w-20 h-20 bg-brand-100 dark:bg-brand-900/50 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i class="fa-solid fa-book-open-reader text-3xl text-brand-600 dark:text-brand-400"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-4">Documentação Oficial</h2>
-                <p class="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
-                    A arquitetura base (Contatos, Caixas de Entrada, Webhooks) deve ser consultada no repositório oficial da plataforma.
-                </p>
-                
-                <a href="https://chatwoot.com/developers/api/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center bg-gray-900 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white font-medium py-3 px-8 rounded-lg transition-colors shadow-md">
-                    Acessar API Oficial <i class="fa-solid fa-arrow-up-right-from-square ml-3"></i>
-                </a>
-            </div>
-        </section>
-
+    <!-- CONTAINER DA DOCUMENTAÇÃO SCALAR -->
+    <main id="scalar-container" class="w-full">
+        <!-- Loader inicial -->
+        <div id="loader" class="loader-container">
+            <div class="spinner mb-4"></div>
+            <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Inicializando Motor Scalar...</p>
+        </div>
     </main>
 
-    <footer class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto transition-colors duration-300">
-        <div class="container mx-auto px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400 flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; 2026 LexSec Technologies. Operação Client-Side.</p>
-            <p class="mt-2 md:mt-0">Desenvolvido para máxima segurança e praticidade.</p>
-        </div>
-    </footer>
-
-    <!-- Scripts (Swagger UI e Lógica Externa) -->
-    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-bundle.js"></script>
-    <script src="https://unpkg.com/swagger-ui-dist@5.9.0/swagger-ui-standalone-preset.js"></script>
-    
     <script>
         // ==========================================
-        // SEU JSON COMPLETO E INTACTO AQUI
+        // 1. DADOS NATIVOS (KANBAN API JSON)
         // ==========================================
-        const swaggerSpecData = {
+        const kanbanSpecData = {
           "openapi": "3.1.0",
           "info": {
-            "title": "Chatwoot Kanban API",
-            "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
+            "title": "LexSec | Kanban Extension API",
+            "description": "A API Kanban expande as capacidades do Chatwoot permitindo a gestão profissional de Funis de Vendas e Kanban Items.\n\n## Como Começar\n\n1. Clique no botão verde **Authorize** no painel direito (ou insira seu token nas requisições cURL).\n2. Insira o seu `api_access_token` gerado nas configurações de perfil do seu Chatwoot.\n3. Utilize a URL padrão oficial ou configure a URL da sua instância no cabeçalho superior desta página.\n\n## Segurança Absoluta\nOs testes realizados nesta página operam 100% no seu navegador (Client-Side). Seus tokens ou URLs nunca são coletados ou armazenados externamente.",
+            "version": "1.0.0"
+          },
+          "servers": [
+            {
+              "url": "https://api.chatwoot.com/api/v1",
+              "description": "Servidor Chatwoot Oficial"
+            }
+          ],
+          "security": [{"apiAccessToken": []}],
+          "components": {
+            "securitySchemes": {
+              "apiAccessToken": {
+                "type": "apiKey",
+                "in": "header",
+                "name": "api_access_token",
+                "description": "Token de acesso do perfil do usuário."
+              }
+            }
+          },
+          "tags": [
+            {"name": "Funnels", "description": "Gerenciamento de funis de vendas"},
+            {"name": "Kanban Items", "description": "Gerenciamento de cards no quadro"},
+            {"name": "Checklist", "description": "Tarefas granulares nos cards"},
+            {"name": "Scheduled Messages", "description": "Agendamento de disparos de mensagens"}
+          ],
+          "paths": {
+            "/accounts/{account_id}/funnels": {
+              "get": {
+                "tags": ["Funnels"],
+                "summary": "Listar funnels",
+                "operationId": "listFunnels",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}, "example": 1}
+                ],
+                "responses": {
+                  "200": {"description": "Sucesso", "content": {"application/json": { "example": [{"id": 1, "name": "Funnel de Vendas", "active": true}] }}}
+                }
+              },
+              "post": {
+                "tags": ["Funnels"],
+                "summary": "Criar funnel",
+                "operationId": "createFunnel",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}, "example": 1}
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "example": {
+                        "funnel": {
+                          "name": "Novo Funnel",
+                          "description": "Descrição detalhada",
+                          "active": true
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {"201": {"description": "Criado com sucesso"}}
+              }
+            },
+            "/accounts/{account_id}/kanban_items": {
+              "get": {
+                "tags": ["Kanban Items"],
+                "summary": "Listar kanban items",
+                "operationId": "listKanbanItems",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}, "example": 1},
+                  {"name": "funnel_id", "in": "query", "required": true, "schema": {"type": "integer"}, "example": 1},
+                  {"name": "stage_id", "in": "query", "schema": {"type": "string"}, "example": "lead"}
+                ],
+                "responses": {"200": {"description": "Sucesso"}}
+              },
+              "post": {
+                "tags": ["Kanban Items"],
+                "summary": "Criar kanban item",
+                "operationId": "createKanbanItem",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}, "example": 1}
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "example": {
+                        "kanban_item": {
+                          "funnel_id": 1,
+                          "funnel_stage": "lead",
+                          "position": 1,
+                          "item_details": {
+                            "title": "Novo Lead Comercial",
+                            "priority": "high",
+                            "value": 1500
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {"201": {"description": "Sucesso"}}
+              }
+            },
+            "/accounts/{account_id}/kanban_items/{id}/change_status": {
+              "post": {
+                "tags": ["Kanban Items"],
+                "summary": "Mudar status do card",
+                "operationId": "changeKanbanStatus",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}},
+                  {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "example": {"status": "won"}
+                    }
+                  }
+                },
+                "responses": {"200": {"description": "Status alterado"}}
+              }
+            },
+            "/accounts/{account_id}/kanban_items/{id}/create_checklist_item": {
+              "post": {
+                "tags": ["Checklist"],
+                "summary": "Criar item no checklist",
+                "operationId": "createChecklistItem",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}},
+                  {"name": "id", "in": "path", "required": true, "schema": {"type": "integer"}}
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "example": {"text": "Agendar reunião técnica"}
+                    }
+                  }
+                },
+                "responses": {"200": {"description": "Criado com sucesso"}}
+              }
+            },
+            "/accounts/{account_id}/conversations/{conversation_id}/scheduled_messages": {
+              "get": {
+                "tags": ["Scheduled Messages"],
+                "summary": "Listar mensagens agendadas",
+                "operationId": "listScheduled",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}},
+                  {"name": "conversation_id", "in": "path", "required": true, "schema": {"type": "integer"}}
+                ],
+                "responses": {"200": {"description": "Sucesso"}}
+              },
+              "post": {
+                "tags": ["Scheduled Messages"],
+                "summary": "Criar mensagem agendada",
+                "operationId": "createScheduled",
+                "parameters": [
+                  {"name": "account_id", "in": "path", "required": true, "schema": {"type": "integer"}},
+                  {"name": "conversation_id", "in": "path", "required": true, "schema": {"type": "integer"}}
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "example": {
+                        "scheduled_message": {
+                          "content": "Olá, passo para lembrar da nossa call!",
+                          "scheduled_at": "2025-08-27T13:50:00.000Z",
+                          "title": "Lembrete Reunião",
+                          "status": "pending"
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {"200": {"description": "Mensagem agendada criada"}}
+              }
+            }
+          }
+        };
+
+        // ==========================================
+        // 2. LÓGICA DE GERENCIAMENTO DE TEMA (DARK MODE)
+        // ==========================================
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const darkIcon = document.getElementById('theme-toggle-dark-icon');
+        const lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function initializeTheme() {
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                lightIcon.classList.remove('hidden');
+            } else {
+                document.documentElement.classList.remove('dark');
+                darkIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('color-theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('color-theme', 'dark');
+            }
+        });
+
+        // ==========================================
+        // 3. NAVEGAÇÃO ENTRE APIS (URL PARAMS)
+        // ==========================================
+        // Usamos parâmetros de URL para evitar bugs de re-renderização do Scalar
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentApi = urlParams.get('api') || 'kanban'; 
+
+        function switchApi(apiName) {
+            if (currentApi !== apiName) {
+                // Atualiza a URL e recarrega a página de forma limpa
+                window.location.search = `?api=${apiName}`;
+            }
+        }
+
+        // Estiliza os botões ativos do topo
+        function updateNavButtons() {
+            const btnKanban = document.getElementById('btn-kanban');
+            const btnOfficial = document.getElementById('btn-official');
+            
+            // Reseta cores
+            btnKanban.className = "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200";
+            btnOfficial.className = "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200";
+
+            // Aplica cor de ativo
+            if (currentApi === 'kanban') {
+                btnKanban.className = "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 shadow-sm border border-gray-200 dark:border-gray-600";
+            } else {
+                btnOfficial.className = "px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center bg-white dark:bg-gray-800 text-brand-600 dark:text-brand-400 shadow-sm border border-gray-200 dark:border-gray-600";
+            }
+        }
+
+        // ==========================================
+        // 4. LÓGICA DE INJEÇÃO DO MOTOR SCALAR
+        // ==========================================
+        async function renderApiDocumentation() {
+            const container = document.getElementById('scalar-container');
+            const customUrlInput = document.getElementById('custom-url');
+            const loaderText = document.getElementById('loader-text');
+            
+            // Recupera URL salva pelo usuário (se houver)
+            const savedUrl = localStorage.getItem('lexsec_custom_url');
+            if (savedUrl) {
+                customUrlInput.value = savedUrl;
+            }
+
+            let finalSpecData = null;
+
+            if (currentApi === 'kanban') {
+                loaderText.innerText = "Carregando Documentação Kanban...";
+                // Usa os dados que já embutimos no topo do script
+                finalSpecData = JSON.parse(JSON.stringify(kanbanSpecData)); 
+            } else {
+                loaderText.innerText = "Baixando API Oficial do Repositório Chatwoot...";
+                try {
+                    // Busca diretamente o Swagger original em tempo real
+                    const res = await fetch('https://raw.githubusercontent.com/chatwoot/chatwoot/develop/swagger/swagger.json');
+                    if (!res.ok) throw new Error("Falha na rede");
+                    finalSpecData = await res.json();
+                    
+                    // Modifica as descrições em inglês para PT-BR no bloco inicial para dar as boas vindas
+                    finalSpecData.info.title = "Chatwoot | API Oficial Base";
+                    finalSpecData.info.description = "Esta é a documentação Core do Chatwoot (baixada diretamente da fonte oficial em tempo real).\n\nAqui você encontra todos os endpoints nativos para lidar com Caixas de Entrada (Inboxes), Contatos, Autenticação, Relatórios e Webhooks.";
+                } catch (error) {
+                    console.error("Erro ao buscar API Oficial:", error);
+                    container.innerHTML = `
+                        <div class="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+                            <i class="fa-solid fa-triangle-exclamation text-5xl text-red-500 mb-4"></i>
+                            <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">Erro ao carregar API Oficial</h2>
+                            <p class="text-gray-600 dark:text-gray-400 max-w-md">Não foi possível conectar ao repositório do Chatwoot para baixar a documentação atualizada. Verifique sua conexão ou tente novamente mais tarde.</p>
+                            <button onclick="window.location.reload()" class="mt-6 bg-brand-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-brand-700">Tentar Novamente</button>
+                        </div>
+                    `;
+                    return;
+                }
+            }
+
+            // APLICAR A URL DO USUÁRIO (se existir e for válida)
+            if (savedUrl) {
+                const cleanUrl = savedUrl.replace(/\/$/, ''); // Tira barra final
+                const fullApiUrl = cleanUrl.includes('/api/v1') ? cleanUrl : `${cleanUrl}/api/v1`;
+                
+                finalSpecData.servers = [{
+                    url: fullApiUrl,
+                    description: "Seu Servidor Customizado"
+                }];
+            }
+
+            // Limpa o Loader
+            container.innerHTML = '';
+
+            // CRIA A TAG ESPECIAL DO SCALAR
+            // O Scalar lê os dados da API a partir de um script do tipo application/json
+            const scriptSpec = document.createElement('script');
+            scriptSpec.id = 'api-reference';
+            scriptSpec.type = 'application/json';
+            
+            // Configurações avançadas visuais do Scalar
+            const scalarConfig = {
+                theme: "default",
+                darkMode: document.documentElement.classList.contains('dark'),
+                hideModels: false,
+                hideDownloadButton: true,
+                metaData: {
+                    title: "LexSec Explorer"
+                }
+            };
+            
+            scriptSpec.dataset.configuration = JSON.stringify(scalarConfig);
+            scriptSpec.textContent = JSON.stringify(finalSpecData);
+            container.appendChild(scriptSpec);
+
+            // Importa o Motor Scalar Oficial do CDN
+            const scriptEngine = document.createElement('script');
+            scriptEngine.src = "https://cdn.jsdelivr.net/npm/@scalar/api-reference";
+            container.appendChild(scriptEngine);
+        }
+
+        // ==========================================
+        // 5. INICIALIZAÇÃO E EVENTOS
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeTheme();
+            updateNavButtons();
+            renderApiDocumentation();
+
+            // Salva URL customizada e recarrega para aplicar ao Scalar instantaneamente
+            document.getElementById('url-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const inputUrl = document.getElementById('custom-url').value.trim();
+                
+                if (inputUrl === "") {
+                    localStorage.removeItem('lexsec_custom_url');
+                } else {
+                    localStorage.setItem('lexsec_custom_url', inputUrl);
+                }
+                
+                // Recarrega a página mantendo a aba atual na URL
+                window.location.reload();
+            });
+            
+            // Listener extra para forçar atualização do Scalar caso o usuário mude o tema nativamente (solução para Single Page)
+            document.getElementById('theme-toggle').addEventListener('click', () => {
+                const isDark = document.documentElement.classList.contains('dark');
+                // O Scalar capta a alteração de classe do HTML automaticamente, mas para forçar variáveis CSS caso precise:
+                if (isDark) {
+                    document.documentElement.style.setProperty('--scalar-color-background-1', '#111827');
+                } else {
+                    document.documentElement.style.setProperty('--scalar-color-background-1', '#ffffff');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
