@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LexSec - Documentação de APIs Chatwoot</title>
     
-    <!-- Favicon da LexSec -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <!-- Tailwind CSS (Framework de Estilo Base) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -26,13 +24,10 @@
         }
     </script>
     
-    <!-- FontAwesome para Ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <!-- SEU CSS CUSTOMIZADO (Contém os overrides do Scalar) -->
     <link rel="stylesheet" href="style.css" />
 
-    <!-- INICIALIZAÇÃO IMEDIATA DO TEMA PARA EVITAR PISCAR A TELA -->
     <script>
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -43,18 +38,16 @@
 </head>
 <body class="text-gray-800 dark:text-gray-200 transition-colors duration-200 bg-white dark:bg-gray-900 m-0 pt-[72px] font-sans">
 
-    <!-- HEADER LEXSEC FIXO -->
     <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200 fixed top-0 left-0 right-0 h-[72px] z-[9999] shadow-sm">
         <div class="h-full px-4 md:px-6 flex items-center justify-between">
             
-            <!-- Logo e Navegação de APIs -->
             <div class="flex items-center space-x-4">
                 <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-100 hidden sm:block">
                     <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
                 </div>
                 
                 <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-800 shadow-sm">
                         <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
                     </button>
                     <button onclick="changeTab('official')" id="tab-official" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
@@ -63,7 +56,6 @@
                 </div>
             </div>
             
-            <!-- Controles do Usuário (URL + Dark Mode) -->
             <div class="flex items-center space-x-3 md:space-x-4">
                 <form id="url-form" class="hidden md:flex items-center space-x-2 relative group">
                     <div class="relative">
@@ -83,14 +75,12 @@
                     </div>
                 </form>
 
-                <!-- Botão Mobile para exibir input -->
                 <button type="button" onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400 focus:outline-none">
                     <i class="fa-solid fa-link"></i>
                 </button>
 
                 <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
 
-                <!-- Toggle de Tema -->
                 <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none">
                     <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
                     <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
@@ -99,19 +89,13 @@
         </div>
     </header>
 
-    <!-- CONTAINER DO LOADER -->
     <div id="loader" class="flex flex-col items-center justify-center h-[calc(100vh-72px)]">
-        <!-- Spinner animado via Tailwind -->
         <div class="border-4 border-brand-500/10 border-l-brand-500 rounded-full w-12 h-12 animate-spin mb-4"></div>
         <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Montando documentação...</p>
     </div>
 
-    <!-- O SCALAR SERÁ MONTADO AQUI DENTRO PELO JAVASCRIPT -->
     <div id="api-container"></div>
 
-    <!-- SEU JAVASCRIPT CUSTOMIZADO -->
-    <!-- Ele será responsável por popular a API, esconder o Loader e ligar os eventos de botões -->
-    <script src="script.js"></script>
-
+    <script src="script.js" defer></script>
 </body>
 </html>
