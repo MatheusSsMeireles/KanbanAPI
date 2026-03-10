@@ -141,13 +141,18 @@
                             title="Se em branco, usaremos a oficial. Ex: https://chatwoot.suaempresa.com">
                     </div>
                     <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        Testar URL
+                        Aplicar URL
                     </button>
                     <div class="absolute top-12 right-0 w-72 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
                         <p class="font-bold mb-1"><i class="fa-solid fa-shield-halved text-brand-400"></i> Teste Seguro Client-Side</p>
                         <p class="text-gray-300">Insira a URL do seu Chatwoot para testar endpoints reais. Nenhuma credencial sai do seu navegador.</p>
                     </div>
                 </form>
+
+                <!-- Botão Mobile para exibir input -->
+                <button onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400">
+                    <i class="fa-solid fa-link"></i>
+                </button>
 
                 <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
 
@@ -165,14 +170,15 @@
         <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Montando documentação...</p>
     </div>
 
-    <!-- O SCRIPT DO SCALAR SERÁ INJETADO AQUI DINAMICAMENTE -->
+    <!-- O SCALAR SERÁ MONTADO AQUI DENTRO -->
+    <div id="api-container"></div>
 
     <script>
         // ==========================================
         // DADOS COMPLETOS DA SUA API (API KANBAN)
         // ==========================================
         const KANBAN_SPEC = {
-  "openapi": "3.1.0",
-  "info": {
-    "title": "LexSec | Kanban Extension API",
-    "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
+          "openapi": "3.1.0",
+          "info": {
+            "title": "LexSec | Kanban Extension API",
+            "description": "API para gerenciamento de Funnels e Kanban Items no Chatwoot.\n\n## Recursos Principais\n\n* **Funnels**: Gerenciamento de funis de vendas\n* **Kanban Items**: Itens do quadro Kanban\n* **Estágios**: Controle de estágios do funil\n* **Estatísticas**: Métricas e relatórios\n* **Agentes**: Atribuição e gerenciamento de agentes\n* **Checklist**: Gerenciamento de tarefas\n* **Notas**: Sistema de anotações\n\n## Autenticação\n\nEsta API utiliza autenticação via token. Inclua o header:\n
