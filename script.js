@@ -25,6 +25,78 @@ document.addEventListener('DOMContentLoaded', () => {
     const URL_OFFICIAL_API = 'https://raw.githubusercontent.com/chatwoot/chatwoot/develop/swagger/swagger.json';
     
     // ==========================================
+    // CORREÇÕES VISUAIS DO SCALAR (TEMA E BOTÕES)
+    // ==========================================
+    // Injetamos regras globais via JS para forçar o Scalar a obedecer o Header da LexSec
+    const scalarOverrides = document.createElement('style');
+    scalarOverrides.innerHTML = `
+        /* 1. Ocultar o botão Open API Client e links não desejados no rodapé */
+        .scalar-app a[href*="client"],
+        .scalar-app a[target="_blank"]:has(svg),
+        .scalar-app .sidebar-footer a,
+        .open-api-client-button {
+            display: none !important;
+        }
+
+        /* 2. Ocultar o Toggle de Tema nativo do Scalar (Botão Sol/Lua de baixo) */
+        .scalar-app button[role="switch"],
+        .scalar-app .sidebar-footer button,
+        .scalar-app button[aria-label*="mode" i],
+        .scalar-app button[aria-label*="theme" i] {
+            display: none !important;
+        }
+
+        /* 3. Forçar o Dark Mode do Scalar quando a LexSec estiver no modo escuro */
+        html.dark {
+            --scalar-color-background-1: #111827 !important;
+            --scalar-color-background-2: #1f2937 !important;
+            --scalar-color-background-3: #374151 !important;
+            
+            --scalar-color-text-1: #f3f4f6 !important;
+            --scalar-color-text-2: #d1d5db !important;
+            --scalar-color-text-3: #9ca3af !important;
+            
+            --scalar-color-border: #374151 !important;
+            
+            --scalar-sidebar-background-1: #111827 !important;
+            --scalar-sidebar-color-1: #f3f4f6 !important;
+            --scalar-sidebar-color-2: #9ca3af !important;
+            --scalar-sidebar-border-color: #374151 !important;
+            
+            --scalar-color-accent: #3b82f6 !important;
+            --scalar-button-1: #3b82f6 !important;
+            --scalar-button-1-hover: #60a5fa !important;
+            
+            color-scheme: dark !important;
+        }
+
+        /* 4. Forçar o Light Mode do Scalar quando a LexSec estiver no modo claro */
+        html:not(.dark) {
+            --scalar-color-background-1: #ffffff !important;
+            --scalar-color-background-2: #f9fafb !important;
+            --scalar-color-background-3: #f3f4f6 !important;
+            
+            --scalar-color-text-1: #111827 !important;
+            --scalar-color-text-2: #4b5563 !important;
+            --scalar-color-text-3: #6b7280 !important;
+            
+            --scalar-color-border: #e5e7eb !important;
+            
+            --scalar-sidebar-background-1: #ffffff !important;
+            --scalar-sidebar-color-1: #111827 !important;
+            --scalar-sidebar-color-2: #4b5563 !important;
+            --scalar-sidebar-border-color: #e5e7eb !important;
+            
+            --scalar-color-accent: #2563eb !important;
+            --scalar-button-1: #2563eb !important;
+            --scalar-button-1-hover: #1d4ed8 !important;
+            
+            color-scheme: light !important;
+        }
+    `;
+    document.head.appendChild(scalarOverrides);
+
+    // ==========================================
     // INICIALIZAÇÃO E GESTÃO DE TEMAS
     // ==========================================
     function initTheme() {
@@ -111,15 +183,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Limpa o container para não sobrepor telas antigas
         apiContainer.innerHTML = '';
 
-        // Cria o elemento de configuração que o Scalar lê
+        // Cria o elemento principal do Scalar
         const dataScript = document.createElement('script');
         dataScript.id = 'api-reference';
         dataScript.type = 'application/json';
+        
+        // Aplicamos configurações nativas do Scalar para tentar esconder nativamente os controles indesejados
+        const scalarConfig = {
+            theme: 'default',
+            hideDarkModeToggle: true,
+            hideClientButton: true
+        };
+        dataScript.setAttribute('data-configuration', JSON.stringify(scalarConfig));
+        
         dataScript.textContent = JSON.stringify(specObj);
         apiContainer.appendChild(dataScript);
 
         // Verifica se o script motor do Scalar já foi injetado na página antes.
-        // Isso evita erros no console e melhora a velocidade ao alternar entre as abas.
         const existingScalarScript = document.getElementById('scalar-engine-script');
         
         if (!existingScalarScript) {
@@ -128,8 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             scalarScript.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
             document.body.appendChild(scalarScript);
         } else {
-            // Se o motor já está rodando, recarregamos forçadamente adicionando o script novamente
-            // mas apenas no escopo do container para que ele re-renderize os dados novos.
+            // Recarregamos forçadamente adicionando o script novamente no container
             const scalarScript = document.createElement('script');
             scalarScript.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
             apiContainer.appendChild(scalarScript);
