@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexSec - Documentação de APIs Chatwoot</title>
+    <title>LexSec - Developer Portal</title>
     
+    <!-- Favicon -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -17,17 +19,26 @@
                         brand: {
                             500: '#2563eb',
                             600: '#1d4ed8',
+                            900: '#1e3a8a'
                         }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                        mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace']
                     }
                 }
             }
         }
     </script>
     
+    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- CSS Customizado -->
     <link rel="stylesheet" href="style.css" />
 
+    <!-- Inicialização do Tema -->
     <script>
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -36,66 +47,109 @@
         }
     </script>
 </head>
-<body class="text-gray-800 dark:text-gray-200 transition-colors duration-200 bg-white dark:bg-gray-900 m-0 pt-[72px] font-sans">
+<body class="text-gray-800 dark:text-gray-200 transition-colors duration-200 bg-white dark:bg-gray-900 m-0 font-sans overflow-hidden">
 
-    <header id="lexsec-header" class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-200 fixed top-0 left-0 right-0 h-[72px] z-[9999] shadow-sm">
-        <div class="h-full px-4 md:px-6 flex items-center justify-between">
-            
-            <div class="flex items-center space-x-4">
-                <div class="bg-white p-1.5 rounded-lg shadow-sm border border-gray-100 hidden sm:block">
-                    <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
-                </div>
-                
-                <div class="flex space-x-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg border border-gray-200 dark:border-gray-600">
-                    <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-800 shadow-sm">
-                        <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
-                    </button>
-                    <button onclick="changeTab('official')" id="tab-official" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-                        <i class="fa-solid fa-code mr-2"></i> API Oficial
-                    </button>
-                </div>
+    <!-- HEADER SUPERIOR -->
+    <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200 h-[72px] flex items-center justify-between px-4 md:px-6 fixed w-full z-50">
+        <div class="flex items-center space-x-6">
+            <div class="bg-gray-50 dark:bg-gray-800 p-1.5 rounded-lg border border-gray-100 dark:border-gray-700 flex items-center justify-center">
+                <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
             </div>
             
-            <div class="flex items-center space-x-3 md:space-x-4">
-                <form id="url-form" class="hidden md:flex items-center space-x-2 relative group">
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fa-solid fa-link text-gray-400"></i>
-                        </div>
-                        <input type="url" id="custom-url" placeholder="URL da sua instância (Opcional)" 
-                            class="pl-10 pr-4 py-1.5 w-64 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none transition-shadow"
-                            title="Se em branco, usaremos a oficial. Ex: https://chatwoot.suaempresa.com">
-                    </div>
-                    <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
-                        Aplicar URL
-                    </button>
-                    <div class="absolute top-12 right-0 w-72 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                        <p class="font-bold mb-1"><i class="fa-solid fa-shield-halved text-brand-400"></i> Teste Seguro Client-Side</p>
-                        <p class="text-gray-300">Insira a URL do seu Chatwoot para testar endpoints reais. Nenhuma credencial sai do seu navegador.</p>
-                    </div>
-                </form>
-
-                <button type="button" onclick="document.getElementById('url-form').classList.toggle('hidden');" class="md:hidden p-2 text-gray-500 dark:text-gray-400 focus:outline-none">
-                    <i class="fa-solid fa-link"></i>
+            <!-- Controle de Abas -->
+            <div class="hidden md:flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+                <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-900 shadow-sm">
+                    <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
                 </button>
-
-                <div class="h-6 w-px bg-gray-300 dark:bg-gray-600 hidden md:block"></div>
-
-                <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors focus:outline-none">
-                    <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
-                    <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
+                <button onclick="changeTab('official')" id="tab-official" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                    <i class="fa-solid fa-code mr-2"></i> API Oficial
                 </button>
             </div>
         </div>
+        
+        <div class="flex items-center space-x-3 md:space-x-4">
+            <!-- Inputs Globais: URL e Token -->
+            <form id="global-settings-form" class="hidden xl:flex items-center space-x-2 relative group">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-link text-gray-400"></i>
+                    </div>
+                    <input type="url" id="custom-url" placeholder="URL da Instância" title="Ex: https://chatwoot.lexsec.shop"
+                        class="pl-9 pr-3 py-1.5 w-48 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                </div>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-key text-gray-400"></i>
+                    </div>
+                    <input type="password" id="global-token" placeholder="api_access_token" title="Seu token para testar a API"
+                        class="pl-9 pr-3 py-1.5 w-48 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 outline-none transition-all">
+                </div>
+                <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
+                    Salvar
+                </button>
+            </form>
+
+            <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
+
+            <!-- Toggle de Tema -->
+            <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none">
+                <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
+                <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
+            </button>
+            
+            <!-- Botão Menu Mobile -->
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 dark:text-gray-300">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
     </header>
 
-    <div id="loader" class="flex flex-col items-center justify-center h-[calc(100vh-72px)]">
-        <div class="border-4 border-brand-500/10 border-l-brand-500 rounded-full w-12 h-12 animate-spin mb-4"></div>
-        <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse" id="loader-text">Montando documentação...</p>
+    <!-- LAYOUT PRINCIPAL -->
+    <div class="flex h-screen pt-[72px]">
+        
+        <!-- SIDEBAR DE NAVEGAÇÃO -->
+        <aside id="sidebar" class="w-72 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-200 fixed md:relative z-40 h-full">
+            <div class="p-4">
+                <!-- Abas Mobile -->
+                <div class="md:hidden flex flex-col space-y-2 mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+                     <button onclick="changeTab('kanban')" class="w-full px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center bg-gray-100 dark:bg-gray-800 text-brand-600">
+                        <i class="fa-solid fa-diagram-project w-5"></i> API Kanban
+                    </button>
+                    <button onclick="changeTab('official')" class="w-full px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center text-gray-600 dark:text-gray-300">
+                        <i class="fa-solid fa-code w-5"></i> API Oficial
+                    </button>
+                </div>
+
+                <!-- Busca -->
+                <div class="relative mb-6">
+                    <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
+                    <input type="text" id="search-endpoints" placeholder="Buscar rotas..." 
+                        class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500 dark:text-white transition-colors">
+                </div>
+                
+                <!-- Links gerados pelo JS -->
+                <nav id="sidebar-nav" class="space-y-6 pb-12"></nav>
+            </div>
+        </aside>
+
+        <!-- CONTEÚDO PRINCIPAL DA API -->
+        <main id="main-content" class="flex-1 bg-white dark:bg-[#0a0f1c] overflow-y-auto relative scroll-smooth px-4 md:px-8 lg:px-12">
+            
+            <!-- Loader -->
+            <div id="loader" class="absolute inset-0 bg-white/80 dark:bg-[#0a0f1c]/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
+                <div class="border-4 border-brand-500/20 border-l-brand-500 rounded-full w-12 h-12 animate-spin mb-4"></div>
+                <p class="text-gray-500 dark:text-gray-400 font-medium animate-pulse">Construindo documentação interativa...</p>
+            </div>
+
+            <!-- Onde a mágica acontece -->
+            <div id="api-render-area" class="max-w-[1400px] mx-auto pb-32 pt-8"></div>
+            
+        </main>
     </div>
 
-    <div id="api-container"></div>
+    <!-- Overlay Mobile -->
+    <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
-    <script src="script.js" defer></script>
+    <script src="script.js"></script>
 </body>
 </html>
