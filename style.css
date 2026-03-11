@@ -1,32 +1,106 @@
-/* Oculta a barra original do Scalar para usarmos o nosso Header LexSec */
-.scalar-api-client-header {
-    display: none !important;
+/* Personalização das Barras de Rolagem para um visual Premium */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
 }
 
-/* OVERRIDES DO SCALAR PARA TEMA LIGHT/AZUL LEXSEC */
-:root {
-    --scalar-color-accent: #2563eb;
-    --scalar-button-1: #2563eb;
-    --scalar-button-1-hover: #1d4ed8;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-/* OVERRIDES DO SCALAR PARA DARK MODE (Ativa magicamente o modo escuro no Scalar) */
-html.dark {
-    --scalar-color-accent: #3b82f6 !important;
-    --scalar-button-1: #3b82f6 !important;
-    --scalar-button-1-hover: #60a5fa !important;
-    
-    --scalar-color-background-1: #111827 !important;
-    --scalar-color-background-2: #1f2937 !important;
-    --scalar-color-background-3: #374151 !important;
-    
-    --scalar-color-text-1: #f3f4f6 !important;
-    --scalar-color-text-2: #d1d5db !important;
-    --scalar-color-text-3: #9ca3af !important;
-    
-    --scalar-color-border: #374151 !important;
-    
-    --scalar-sidebar-background-1: #111827 !important;
-    --scalar-sidebar-color-1: #f3f4f6 !important;
-    --scalar-sidebar-border-color: #374151 !important;
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Base de tipografia para códigos */
+pre {
+    margin: 0;
+}
+
+code {
+    font-family: 'Fira Code', monospace;
+}
+
+/* Realce de Sintaxe JSON Customizado (Imita um Editor de Código) */
+.string { color: #a5d6ff; }
+.number { color: #79c0ff; }
+.boolean { color: #ff7b72; }
+.null { color: #ff7b72; }
+.key { color: #7ee787; font-weight: 500; }
+
+.dark .string { color: #a5d6ff; }
+.dark .number { color: #79c0ff; }
+.dark .boolean { color: #ff7b72; }
+.dark .null { color: #ff7b72; }
+.dark .key { color: #7ee787; }
+
+html:not(.dark) .string { color: #032f62; }
+html:not(.dark) .number { color: #005cc5; }
+html:not(.dark) .boolean { color: #d73a49; }
+html:not(.dark) .null { color: #d73a49; }
+html:not(.dark) .key { color: #22863a; }
+
+/* Animações suaves de transição */
+.endpoint-card {
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Ajustes de tabelas e listas no Markdown (Textos Descritivos) */
+.prose ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.prose strong {
+    font-weight: 600;
+}
+
+/* Link ativo na barra lateral */
+.sidebar-link.active {
+    color: #2563eb;
+    font-weight: 600;
+}
+
+.dark .sidebar-link.active {
+    color: #60a5fa;
+}
+
+/* Inputs do Playground / Try it out (Formulários de Teste) */
+.playground-input {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.2);
+    border: 1px solid #374151;
+    color: #f3f4f6;
+    font-family: 'Fira Code', monospace;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.playground-input:focus {
+    border-color: #3b82f6;
+}
+
+/* Modo Claro para Inputs do Playground */
+html:not(.dark) .playground-input {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    color: #111827;
+}
+
+html:not(.dark) .playground-input:focus {
+    border-color: #2563eb;
 }
