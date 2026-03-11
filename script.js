@@ -24,11 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Chatwoot Oficial API: Lendo direto do Github do Chatwoot (Online)
     const URL_OFFICIAL_API = 'https://raw.githubusercontent.com/chatwoot/chatwoot/develop/swagger/swagger.json';
     
-    // DICA: Se você fez o passo de baixar o JSON oficial e subiu pro seu repositório, 
-    // basta apagar a linha acima e descomentar (tirar as barras) da linha abaixo:
-    // const URL_OFFICIAL_API = './chatwoot-oficial.json';
-
-
     // ==========================================
     // INICIALIZAÇÃO E GESTÃO DE TEMAS
     // ==========================================
@@ -113,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderScalar(specObj) {
         if (!apiContainer) return;
         
-        // Limpa o container para não sobrepor telas
+        // Limpa o container para não sobrepor telas antigas
         apiContainer.innerHTML = '';
 
         // Cria o elemento de configuração que o Scalar lê
@@ -123,10 +118,22 @@ document.addEventListener('DOMContentLoaded', () => {
         dataScript.textContent = JSON.stringify(specObj);
         apiContainer.appendChild(dataScript);
 
-        // Chama o motor do Scalar via CDN para renderizar a interface
-        const scalarScript = document.createElement('script');
-        scalarScript.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
-        apiContainer.appendChild(scalarScript);
+        // Verifica se o script motor do Scalar já foi injetado na página antes.
+        // Isso evita erros no console e melhora a velocidade ao alternar entre as abas.
+        const existingScalarScript = document.getElementById('scalar-engine-script');
+        
+        if (!existingScalarScript) {
+            const scalarScript = document.createElement('script');
+            scalarScript.id = 'scalar-engine-script';
+            scalarScript.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
+            document.body.appendChild(scalarScript);
+        } else {
+            // Se o motor já está rodando, recarregamos forçadamente adicionando o script novamente
+            // mas apenas no escopo do container para que ele re-renderize os dados novos.
+            const scalarScript = document.createElement('script');
+            scalarScript.src = 'https://cdn.jsdelivr.net/npm/@scalar/api-reference';
+            apiContainer.appendChild(scalarScript);
+        }
     }
 
     // ==========================================
