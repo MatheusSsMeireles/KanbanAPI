@@ -14,9 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentTab = 'kanban';
     let customBaseUrl = '';
 
-    // URLs das documentações
+    // ==========================================
+    // URLs (Caminhos dos arquivos de API)
+    // ==========================================
+    
+    // 1. Kanban API: Lendo do arquivo que você vai subir no seu GitHub
     const URL_KANBAN_API = './api-1.json';
+    
+    // 2. Chatwoot Oficial API: Lendo direto do Github do Chatwoot (Online)
     const URL_OFFICIAL_API = 'https://raw.githubusercontent.com/chatwoot/chatwoot/develop/swagger/swagger.json';
+    
+    // DICA: Se você fez o passo de baixar o JSON oficial e subiu pro seu repositório, 
+    // basta apagar a linha acima e descomentar (tirar as barras) da linha abaixo:
+    // const URL_OFFICIAL_API = './chatwoot-oficial.json';
+
 
     // ==========================================
     // INICIALIZAÇÃO E GESTÃO DE TEMAS
@@ -51,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentTab === tab) return;
         currentTab = tab;
 
+        // Troca as cores dos botões ao clicar
         if (tabKanban && tabOfficial) {
             if (tab === 'kanban') {
                 tabKanban.className = 'px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-800 shadow-sm';
@@ -67,16 +79,17 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadApiSpec() {
         showLoader();
         try {
+            // Define de qual URL baixar baseado na aba clicada
             const fetchUrl = currentTab === 'kanban' ? URL_KANBAN_API : URL_OFFICIAL_API;
             const response = await fetch(fetchUrl);
             
             if (!response.ok) {
-                throw new Error(`Erro de rede: ${response.status} - Não foi possível carregar os dados.`);
+                throw new Error(`Erro ${response.status}: Não foi possível acessar o arquivo.`);
             }
 
             const specData = await response.json();
 
-            // Injeta a URL personalizada se o usuário preencheu o input
+            // Injeta a URL personalizada se o usuário preencheu o formulário
             if (customBaseUrl) {
                 specData.servers = [{ url: customBaseUrl, description: 'Instância Personalizada' }];
             }
@@ -85,7 +98,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error(error);
             if (apiContainer) {
-                apiContainer.innerHTML = `<div class="p-8 text-center text-red-500 font-medium mt-10">Erro ao carregar a documentação: ${error.message} <br>Verifique se o arquivo api-1.json está na mesma pasta.</div>`;
+                apiContainer.innerHTML = `<div class="p-8 text-center text-red-500 font-medium mt-10">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i><br>
+                    Erro ao carregar a documentação.<br>
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Detalhe técnico: ${error.message}</span><br><br>
+                    Verifique se o arquivo <b>${currentTab === 'kanban' ? 'api-1.json' : 'oficial'}</b> está salvo corretamente no seu repositório.
+                </div>`;
             }
         } finally {
             hideLoader();
@@ -95,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderScalar(specObj) {
         if (!apiContainer) return;
         
-        // Limpa o container para não sobrepor instâncias
+        // Limpa o container para não sobrepor telas
         apiContainer.innerHTML = '';
 
         // Cria o elemento de configuração que o Scalar lê
@@ -118,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
         urlForm.addEventListener('submit', (e) => {
             e.preventDefault();
             customBaseUrl = customUrlInput.value.trim();
-            loadApiSpec(); // Recarrega a API com a nova base URL
+            loadApiSpec(); // Recarrega a API com a nova base URL aplicada
         });
     }
 
@@ -142,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Start App
+    // Inicializa a aplicação
     initTheme();
     loadApiSpec();
 });
