@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LexSec - Developer Portal</title>
     
-    <!-- Favicon -->
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -31,11 +29,9 @@
         }
     </script>
     
-    <!-- FontAwesome & Google Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Estilos Customizados Integrados -->
     <style>
         /* Personalização das Barras de Rolagem para um visual Premium */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -70,7 +66,6 @@
         html:not(.dark) .playground-input:focus { border-color: #2563eb; }
     </style>
 
-    <!-- Inicialização do Tema -->
     <script>
         if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
@@ -81,14 +76,12 @@
 </head>
 <body class="text-gray-800 dark:text-gray-200 transition-colors duration-200 bg-white dark:bg-gray-900 m-0 font-sans overflow-hidden">
 
-    <!-- HEADER SUPERIOR -->
     <header class="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 transition-colors duration-200 h-[72px] flex items-center justify-between px-4 md:px-6 fixed w-full z-50">
         <div class="flex items-center space-x-6">
             <div class="bg-gray-50 dark:bg-gray-800 p-1.5 rounded-lg border border-gray-100 dark:border-gray-700 flex items-center justify-center">
                 <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
             </div>
             
-            <!-- Controle de Abas -->
             <div class="hidden md:flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
                 <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-900 shadow-sm">
                     <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
@@ -100,7 +93,6 @@
         </div>
         
         <div class="flex items-center space-x-3 md:space-x-4">
-            <!-- Inputs Globais: URL e Token -->
             <form id="global-settings-form" class="hidden xl:flex items-center space-x-2 relative group">
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -123,32 +115,26 @@
 
             <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
 
-            <!-- Toggle de Idioma -->
             <button id="lang-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none flex items-center space-x-1" title="Mudar Idioma">
                 <i class="fa-solid fa-language text-lg"></i>
                 <span id="current-lang-text" class="text-xs font-bold uppercase">PT</span>
             </button>
 
-            <!-- Toggle de Tema -->
             <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" title="Mudar Tema">
                 <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
                 <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
             </button>
             
-            <!-- Botão Menu Mobile -->
             <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 dark:text-gray-300">
                 <i class="fa-solid fa-bars text-xl"></i>
             </button>
         </div>
     </header>
 
-    <!-- LAYOUT PRINCIPAL -->
     <div class="flex h-screen pt-[72px]">
         
-        <!-- SIDEBAR DE NAVEGAÇÃO -->
         <aside id="sidebar" class="w-72 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex-shrink-0 overflow-y-auto transform -translate-x-full md:translate-x-0 transition-transform duration-200 fixed md:relative z-40 h-full">
             <div class="p-4">
-                <!-- Abas Mobile -->
                 <div class="md:hidden flex flex-col space-y-2 mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
                      <button onclick="changeTab('kanban')" class="w-full px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center bg-gray-100 dark:bg-gray-800 text-brand-600">
                         <i class="fa-solid fa-diagram-project w-5"></i> API Kanban
@@ -158,37 +144,30 @@
                     </button>
                 </div>
 
-                <!-- Busca -->
                 <div class="relative mb-6">
                     <i class="fa-solid fa-search absolute left-3 top-3 text-gray-400 text-sm"></i>
                     <input type="text" id="search-endpoints" placeholder="Buscar rotas..." 
                         class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:border-brand-500 dark:text-white transition-colors">
                 </div>
                 
-                <!-- Links gerados pelo JS -->
                 <nav id="sidebar-nav" class="space-y-6 pb-12"></nav>
             </div>
         </aside>
 
-        <!-- CONTEÚDO PRINCIPAL DA API -->
         <main id="main-content" class="flex-1 bg-white dark:bg-[#0a0f1c] overflow-y-auto relative scroll-smooth px-4 md:px-8 lg:px-12">
             
-            <!-- Loader -->
             <div id="loader" class="absolute inset-0 bg-white/80 dark:bg-[#0a0f1c]/80 backdrop-blur-sm z-50 flex flex-col items-center justify-center">
                 <div class="border-4 border-brand-500/20 border-l-brand-500 rounded-full w-12 h-12 animate-spin mb-4"></div>
                 <p id="loader-text" class="text-gray-500 dark:text-gray-400 font-medium animate-pulse">Construindo documentação interativa...</p>
             </div>
 
-            <!-- Onde a mágica acontece -->
             <div id="api-render-area" class="max-w-[1400px] mx-auto pb-32 pt-8"></div>
             
         </main>
     </div>
 
-    <!-- Overlay Mobile -->
     <div id="mobile-overlay" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden"></div>
 
-    <!-- Motor JavaScript Integrado -->
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Referências DOM Globais
@@ -488,7 +467,7 @@
         }
 
         // ==========================================
-        // 3. PARSER DO OPENAPI
+        // 3. PARSER DO OPENAPI (CORRIGIDO)
         // ==========================================
         function resolveRef(ref, spec) {
             if(!ref) return null;
@@ -539,14 +518,34 @@
 
             if(rawSpec.paths) {
                 Object.keys(rawSpec.paths).forEach(path => {
-                    const methods = rawSpec.paths[path];
-                    Object.keys(methods).forEach(method => {
+                    const pathItem = rawSpec.paths[path];
+                    
+                    // Extrai parâmetros do nível PATH (Ex: account_id)
+                    const pathLevelParams = pathItem.parameters || [];
+                    
+                    Object.keys(pathItem).forEach(method => {
                         if(method === 'parameters') return;
                         
-                        const op = methods[method];
+                        const op = pathItem[method];
                         const tagName = (op.tags && op.tags.length > 0) ? op.tags[0] : 'Geral';
                         
                         if(!categories[tagName]) categories[tagName] = { name: tagName, description: '', endpoints: [] };
+
+                        // Junta parâmetros Path-Level e Operation-Level
+                        const opLevelParams = op.parameters || [];
+                        const rawParams = [...pathLevelParams, ...opLevelParams];
+                        
+                        // Resolve as referências ($ref) dos parâmetros
+                        const resolvedParams = rawParams.map(p => p.$ref ? (resolveRef(p.$ref, rawSpec) || p) : p);
+                        
+                        // Deduplica parâmetros pelo nome e localização para evitar falhas
+                        const paramMap = new Map();
+                        resolvedParams.forEach(p => {
+                            if (p && p.name && p.in) {
+                                paramMap.set(`${p.name}-${p.in}`, p);
+                            }
+                        });
+                        const finalParams = Array.from(paramMap.values());
 
                         const endpoint = {
                             id: op.operationId || `${method}-${path.replace(/\//g, '-')}`,
@@ -555,7 +554,7 @@
                             fullUrl: `${baseUrl}${path}`,
                             summary: op.summary || 'Sem título',
                             description: op.description || '',
-                            parameters: op.parameters || [],
+                            parameters: finalParams,
                             bodyExample: null,
                             responseExample: null
                         };
@@ -635,6 +634,7 @@
 
         function renderMainContent(data) {
             const uiText = uiTranslations[currentLang];
+            const displayToken = globalToken || 'SEU_TOKEN_AQUI'; // <--- CORREÇÃO DE TOKEN DINÂMICO
             
             let html = `
                 <div class="mb-16 border-b border-gray-200 dark:border-gray-800 pb-12 pt-8">
@@ -657,7 +657,6 @@
                 const translatedCat = translateCategory(cat.name, currentLang);
                 html += `<div class="mb-20">`;
                 
-                // BUG CORRIGIDO: A classe "sticky top-[72px]" foi removida para evitar a sobreposição de conteúdo
                 html += `<h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 py-4 border-b border-gray-100 dark:border-gray-800">${translatedCat}</h2>`;
                 
                 cat.endpoints.forEach(ep => {
@@ -687,11 +686,13 @@
                         paramsHtml += `</ul>`;
                     }
 
-                    // Códigos cURL
+                    // Códigos cURL (Usa o Token atualizado da variável global)
                     const jsonBodyStr = ep.bodyExample ? JSON.stringify(ep.bodyExample, null, 2) : '';
                     const escapedBodyStr = jsonBodyStr.replace(/'/g, "'\\''"); 
-                    let curlCode = `curl -X ${ep.method} "${ep.fullUrl}" \\\n  -H "api_access_token: SEU_TOKEN_AQUI"`;
-                    if(ep.bodyExample) curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${escapedBodyStr}'`;
+                    let curlCode = `curl -X ${ep.method} "${ep.fullUrl}" \\\n  -H "api_access_token: ${displayToken}"`;
+                    if(ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
+                        curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${escapedBodyStr || '{}'}'`;
+                    }
 
                     // Formulário de Teste (Playground)
                     let testInputsHtml = '';
@@ -699,23 +700,25 @@
                         testInputsHtml += `
                             <div class="mb-3">
                                 <label class="block text-xs text-gray-400 mb-1">${p.name} <span class="text-rose-500">*</span></label>
-                                <input type="text" id="input-${ep.id}-path-${p.name}" class="playground-input" placeholder="${p.example || ''}">
+                                <input type="text" id="input-${ep.id}-path-${p.name}" class="playground-input" placeholder="${p.example || p.schema?.example || ''}">
                             </div>`;
                     });
                     queryParams.forEach(p => {
                         testInputsHtml += `
                             <div class="mb-3">
                                 <label class="block text-xs text-gray-400 mb-1">${p.name} ${p.required ? '<span class="text-rose-500">*</span>' : ''}</label>
-                                <input type="text" id="input-${ep.id}-query-${p.name}" class="playground-input" placeholder="${p.example || ''}">
+                                <input type="text" id="input-${ep.id}-query-${p.name}" class="playground-input" placeholder="${p.example || p.schema?.example || ''}">
                             </div>`;
                     });
 
                     let bodyEditorHtml = '';
-                    if (ep.bodyExample && (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH')) {
+                    // Mostra o editor de Body sempre em POST/PUT/PATCH para permitir envio de JSON manual
+                    if (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
+                        const defaultBodyValue = jsonBodyStr || '{\n  \n}';
                         bodyEditorHtml = `
                             <div class="mb-4">
                                 <label class="block text-xs text-gray-400 mb-1">${uiText.bodyLabel}</label>
-                                <textarea id="input-${ep.id}-body" rows="6" class="playground-input font-mono text-xs">${jsonBodyStr}</textarea>
+                                <textarea id="input-${ep.id}-body" rows="6" class="playground-input font-mono text-xs">${defaultBodyValue}</textarea>
                             </div>
                         `;
                     }
@@ -724,7 +727,6 @@
                     html += `
                         <div id="${ep.id}" class="endpoint-card pt-12 pb-16 border-b border-gray-100 dark:border-gray-800/50 flex flex-col xl:flex-row gap-12">
                             
-                            <!-- Coluna 1: Explicação -->
                             <div class="xl:w-5/12 flex-shrink-0">
                                 <div class="flex items-center gap-3 mb-4">
                                     <span class="text-xs font-bold px-2.5 py-1 rounded border ${style.bg} ${style.color} ${style.border}">${style.label}</span>
@@ -742,16 +744,13 @@
                                 ${paramsHtml}
                             </div>
 
-                            <!-- Coluna 2: Playground e Códigos -->
                             <div class="xl:w-7/12 flex-shrink-0 flex flex-col bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-xl self-start sticky top-28 z-20">
                                 
-                                <!-- Tabs Superiores -->
                                 <div class="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-[#1f2937]">
                                     <button id="tab-btn-code-${ep.id}" onclick="switchPlaygroundTab('${ep.id}', 'code')" class="px-4 py-2 text-sm border-b-2 border-brand-500 text-gray-900 dark:text-white font-medium transition-colors">${uiText.codeExample}</button>
                                     <button id="tab-btn-test-${ep.id}" onclick="switchPlaygroundTab('${ep.id}', 'test')" class="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"><i class="fa-solid fa-play text-[10px] mr-1"></i> ${uiText.testApi}</button>
                                 </div>
 
-                                <!-- VIEW 1: Exemplo de Código -->
                                 <div id="view-code-${ep.id}" class="flex flex-col">
                                     <div class="bg-[#1f2937] px-4 py-2 flex items-center justify-between border-b border-gray-800">
                                         <span class="text-xs font-medium text-gray-400">${uiText.requestExample}</span>
@@ -768,7 +767,6 @@
                                     </div>
                                 </div>
 
-                                <!-- VIEW 2: Testar API (Playground) -->
                                 <div id="view-test-${ep.id}" class="hidden flex flex-col p-4 bg-white dark:bg-[#111827]">
                                     <div class="mb-4">
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mb-4">${uiText.fillFields}</p>
@@ -781,7 +779,6 @@
                                         <span>${uiText.sendRequest}</span>
                                     </button>
 
-                                    <!-- Área de Resultado da Chamada -->
                                     <div id="result-area-${ep.id}" class="mt-6 hidden">
                                         <div class="flex items-center justify-between mb-2">
                                             <span class="text-xs font-semibold text-gray-600 dark:text-gray-300">${uiText.serverResponse}</span>
@@ -851,7 +848,10 @@
             if (bodyInput && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
                 fetchOptions.headers['Content-Type'] = 'application/json';
                 try {
-                    fetchOptions.body = JSON.stringify(JSON.parse(bodyInput.value)); 
+                    const parsedBody = JSON.parse(bodyInput.value);
+                    if (Object.keys(parsedBody).length > 0) {
+                        fetchOptions.body = JSON.stringify(parsedBody); 
+                    }
                 } catch (e) {
                     spinner.classList.add('hidden');
                     alert(uiText.invalidJson);
@@ -932,7 +932,7 @@
                 btn.innerHTML = '<i class="fa-solid fa-check"></i>';
                 setTimeout(() => btn.innerText = originalText, 1500);
 
-                loadApiSpec();
+                loadApiSpec(); // Chama a re-renderização, que agora usa o token!
             });
         }
 
