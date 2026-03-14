@@ -7,27 +7,7 @@
     
     <link rel="icon" href="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" type="image/png">
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            500: '#2563eb',
-                            600: '#1d4ed8',
-                            900: '#1e3a8a'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
-                        mono: ['Fira Code', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
+    <link rel="stylesheet" href="./dist/output.css">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -105,7 +85,7 @@
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <i class="fa-solid fa-key text-gray-400"></i>
                     </div>
-                    <input type="password" id="global-token" placeholder="api_access_token" title="Seu token para testar a API"
+                    <input type="password" id="global-token" placeholder="api_access_token" title="Seu token para testar a API" autocomplete="new-password"
                         class="pl-9 pr-3 py-1.5 w-48 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-brand-500 outline-none transition-all">
                 </div>
                 <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
@@ -283,17 +263,14 @@
             return text;
         }
 
-        // Traduz Títulos e Descrições mais comuns da API Oficial
         function translateText(text, lang) {
             if (!text) return "";
             if (lang === 'en') return text;
             
             let t = text;
             if (lang === 'pt') {
-                // Info description
                 t = t.replace(/This is the API documentation for Chatwoot server\.?/gi, "Esta é a documentação da API para o servidor Chatwoot.");
                 
-                // Verbos comuns (no início ou meio)
                 t = t.replace(/List all/gi, "Listar todos(as)");
                 t = t.replace(/List/g, "Listar");
                 t = t.replace(/Create a new/gi, "Criar um(a) novo(a)");
@@ -318,7 +295,6 @@
                 t = t.replace(/Add/g, "Adicionar");
                 t = t.replace(/Search/g, "Buscar");
 
-                // Substantivos e outros termos
                 t = t.replace(/Account Users/gi, "Usuários da Conta");
                 t = t.replace(/Account User/gi, "Usuário da Conta");
                 t = t.replace(/AgentBots/gi, "Robôs");
@@ -351,7 +327,6 @@
                 t = t.replace(/Profile/gi, "Perfil");
                 t = t.replace(/details/gi, "detalhes");
 
-                // Descrições de Parâmetros comuns
                 t = t.replace(/The numeric ID of the/gi, "O ID numérico da(o)");
                 t = t.replace(/The ID of the/gi, "O ID da(o)");
                 t = t.replace(/ID of the/gi, "ID da(o)");
@@ -395,7 +370,6 @@
                 searchInput.placeholder = uiTranslations[currentLang].searchPlaceholder;
                 document.getElementById('loader-text').innerText = uiTranslations[currentLang].loading;
                 
-                // Re-renderiza tudo na tela instantaneamente com o novo idioma
                 if (apiData) {
                     renderSidebar(apiData);
                     renderMainContent(apiData);
@@ -453,7 +427,6 @@
             });
         }
 
-        // Nova Lógica Segura para Copiar cURL (lendo de data-attribute)
         window.copyCurl = function(btn) {
             const textToCopy = decodeURIComponent(btn.getAttribute('data-curl'));
             navigator.clipboard.writeText(textToCopy).then(() => {
@@ -654,7 +627,6 @@
             const uiText = uiTranslations[currentLang];
             const displayToken = globalToken || 'SEU_TOKEN_AQUI'; 
             
-            // Tradução do Descritivo Principal da API
             const infoDesc = translateText(data.info.description, currentLang);
             
             let html = `
@@ -688,7 +660,6 @@
                     const pathParams = ep.parameters.filter(p => p.in === 'path');
                     const queryParams = ep.parameters.filter(p => p.in === 'query');
 
-                    // Tabela Esquerda (Teoria)
                     let paramsHtml = '';
                     if(pathParams.length > 0 || queryParams.length > 0) {
                         paramsHtml += `<h4 class="text-sm font-semibold text-gray-900 dark:text-white mt-8 mb-4 border-b border-gray-200 dark:border-gray-800 pb-2">${uiText.params}</h4>`;
@@ -709,7 +680,6 @@
                         paramsHtml += `</ul>`;
                     }
 
-                    // Códigos cURL
                     const jsonBodyStr = ep.bodyExample ? JSON.stringify(ep.bodyExample, null, 2) : '';
                     const escapedBodyStr = jsonBodyStr.replace(/'/g, "'\\''"); 
                     let curlCode = `curl -X ${ep.method} "${ep.fullUrl}" \\\n  -H "api_access_token: ${displayToken}"`;
@@ -717,10 +687,8 @@
                         curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${escapedBodyStr || '{}'}'`;
                     }
 
-                    // Encoding Seguro do Curl para o Data Attribute
                     const encodedCurl = encodeURIComponent(curlCode);
 
-                    // Formulário de Teste (Playground)
                     let testInputsHtml = '';
                     pathParams.forEach(p => {
                         testInputsHtml += `
