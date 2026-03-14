@@ -348,7 +348,7 @@
           "Funnels"
         ],
         "summary": "Estatísticas por etapa",
-        "description": "Retorna estatísticas dos itens por etapa do funil (count e valor total)",
+        "description": "Retorna estatísticas dos itens por etapa do funil (name, color, description, count, total_value).\nAceita filtros opcionais: prioridades, agente, valor, datas e exibição de won/lost.\n",
         "operationId": "getFunnelStageStats",
         "parameters": [
           {
@@ -370,11 +370,95 @@
               "type": "integer"
             },
             "example": 1
+          },
+          {
+            "name": "priorities",
+            "in": "query",
+            "description": "Filtrar por prioridades (array)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "example": [
+              "high",
+              "medium"
+            ]
+          },
+          {
+            "name": "agent_id",
+            "in": "query",
+            "description": "ID do agente; use -1 para itens não atribuídos",
+            "schema": {
+              "type": "string"
+            },
+            "example": "1"
+          },
+          {
+            "name": "value_min",
+            "in": "query",
+            "description": "Valor mínimo do item",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "value_max",
+            "in": "query",
+            "description": "Valor máximo do item",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "date_start",
+            "in": "query",
+            "description": "Filtrar itens criados a partir desta data",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "date_end",
+            "in": "query",
+            "description": "Filtrar itens criados até esta data",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "show_won",
+            "in": "query",
+            "description": "Incluir itens com status won (default true)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "true"
+            }
+          },
+          {
+            "name": "show_lost",
+            "in": "query",
+            "description": "Incluir itens com status lost (default true)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "true",
+                "false"
+              ],
+              "default": "true"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Estatísticas das etapas",
+            "description": "Estatísticas das etapas (stages com name, color, description, count, total_value; total_items)",
             "content": {
               "application/json": {
                 "schema": {
@@ -383,18 +467,28 @@
                 "example": {
                   "stages": {
                     "lead": {
+                      "name": "Lead",
+                      "color": "#3b82f6",
+                      "description": null,
                       "count": 5,
                       "total_value": 5000
                     },
                     "prospect": {
+                      "name": "Prospecto",
+                      "color": "#f59e0b",
+                      "description": null,
                       "count": 3,
                       "total_value": 3000
                     },
                     "customer": {
+                      "name": "Cliente",
+                      "color": "#10b981",
+                      "description": null,
                       "count": 2,
                       "total_value": 2000
                     }
-                  }
+                  },
+                  "total_items": 10
                 }
               }
             }
@@ -1421,428 +1515,6 @@
         }
       }
     },
-    "/accounts/{account_id}/kanban_items/{id}/time_report": {
-      "get": {
-        "tags": [
-          "Kanban Items"
-        ],
-        "summary": "Relatório de tempo",
-        "description": "Retorna relatório de tempo total gasto no item, incluindo tempo atual se o timer estiver rodando",
-        "operationId": "getTimeReport",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID do item",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 123
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Relatório de tempo retornado com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TimeReport"
-                },
-                "example": {
-                  "item_id": 123,
-                  "total_duration_seconds": 3600,
-                  "total_duration_formatted": "1h 0m 0s",
-                  "timer_started_at": "2024-01-15T10:30:00Z",
-                  "is_timer_running": true,
-                  "created_at": "2024-01-15T09:00:00Z"
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/{id}/stage_time_breakdown": {
-      "get": {
-        "tags": [
-          "Kanban Items"
-        ],
-        "summary": "Detalhamento de tempo por etapa",
-        "description": "Retorna detalhamento de tempo gasto em cada etapa do funil",
-        "operationId": "getStageTimeBreakdown",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID do item",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 123
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Detalhamento de tempo por etapa retornado com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/StageTimeBreakdown"
-                },
-                "example": {
-                  "item_id": 123,
-                  "stage_breakdown": {
-                    "initial": {
-                      "stage": "new",
-                      "entered_at": "2024-01-15T09:00:00Z",
-                      "duration_seconds": 0
-                    },
-                    "abc123": {
-                      "stage": "qualified",
-                      "entered_at": "2024-01-15T09:30:00Z",
-                      "duration_seconds": 1800,
-                      "duration_formatted": "30m 0s"
-                    }
-                  },
-                  "total_stages": 2
-                }
-              }
-            }
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/{id}/duplicate_checklist": {
-      "post": {
-        "tags": [
-          "Checklist"
-        ],
-        "summary": "Duplicar checklist",
-        "description": "Duplica o checklist de um item para outro item",
-        "operationId": "duplicateChecklist",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID do item fonte",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 123
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Dados para duplicação do checklist",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/DuplicateChecklistRequest"
-              },
-              "example": {
-                "target_item_id": 456,
-                "merge": "true"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Checklist duplicado com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DuplicateChecklistResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/{id}/search_checklist": {
-      "get": {
-        "tags": [
-          "Checklist"
-        ],
-        "summary": "Buscar no checklist",
-        "description": "Busca itens específicos no checklist do item",
-        "operationId": "searchChecklist",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "description": "ID do item",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 123
-          },
-          {
-            "name": "query",
-            "in": "query",
-            "description": "Termo de busca no texto dos itens do checklist",
-            "schema": {
-              "type": "string"
-            },
-            "example": "documentacao"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Busca realizada com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SearchChecklistResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "404": {
-            "$ref": "#/components/responses/NotFound"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/bulk_move_items": {
-      "post": {
-        "tags": [
-          "Kanban Items"
-        ],
-        "summary": "Mover itens em massa",
-        "description": "Move múltiplos itens para uma nova etapa do funil",
-        "operationId": "bulkMoveItems",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Dados para mover itens em massa",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BulkMoveItemsRequest"
-              },
-              "example": {
-                "item_ids": [
-                  123,
-                  456,
-                  789
-                ],
-                "new_stage": "qualified",
-                "funnel_id": 1
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Itens movidos com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BulkMoveItemsResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/bulk_assign_agent": {
-      "post": {
-        "tags": [
-          "Agents"
-        ],
-        "summary": "Atribuir agente em massa",
-        "description": "Atribui um agente para múltiplos itens",
-        "operationId": "bulkAssignAgent",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Dados para atribuir agente em massa",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BulkAssignAgentRequest"
-              },
-              "example": {
-                "item_ids": [
-                  123,
-                  456,
-                  789
-                ],
-                "agent_id": 42,
-                "mode": "add"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Agente atribuído com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BulkAssignAgentResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
-          }
-        }
-      }
-    },
-    "/accounts/{account_id}/kanban_items/bulk_set_priority": {
-      "post": {
-        "tags": [
-          "Kanban Items"
-        ],
-        "summary": "Definir prioridade em massa",
-        "description": "Define prioridade para múltiplos itens",
-        "operationId": "bulkSetPriority",
-        "parameters": [
-          {
-            "name": "account_id",
-            "in": "path",
-            "required": true,
-            "description": "ID da conta",
-            "schema": {
-              "type": "integer"
-            },
-            "example": 1
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "description": "Dados para definir prioridade em massa",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BulkSetPriorityRequest"
-              },
-              "example": {
-                "item_ids": [
-                  123,
-                  456,
-                  789
-                ],
-                "priority": "high"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Prioridade definida com sucesso",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BulkSetPriorityResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/responses/BadRequest"
-          },
-          "422": {
-            "$ref": "#/components/responses/UnprocessableEntity"
-          }
-        }
-      }
-    },
     "/accounts/{account_id}/kanban_items/{id}/assign_agent_to_checklist_item": {
       "post": {
         "tags": [
@@ -1991,6 +1663,1484 @@
           },
           "400": {
             "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/reports": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Relatórios de kanban items",
+        "description": "Retorna métricas e relatórios dos itens (from, to, funnel_id, user_ids)",
+        "operationId": "reportsKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "funnel_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Timestamp início (segundos ou milissegundos)",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Timestamp fim (segundos ou milissegundos)",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "user_ids",
+            "in": "query",
+            "description": "IDs dos agentes para filtrar",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Métricas de relatório",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/search": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Buscar kanban items",
+        "description": "Busca itens por texto (title, description, customer_name, customer_email)",
+        "operationId": "searchKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "cliente"
+          },
+          {
+            "name": "funnel_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de itens encontrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/KanbanItem"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "query": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/filter": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Filtrar kanban items",
+        "description": "Filtra itens por prioridades, valor, agente, datas (priorities, value_min, value_max, agent_id, date_start, date_end, scheduled_date_start, scheduled_date_end)",
+        "operationId": "filterKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "funnel_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "priorities",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "value_min",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "value_max",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date_start",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "date_end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "scheduled_date_start",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "scheduled_date_end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de itens filtrados",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/KanbanItem"
+                      }
+                    },
+                    "total": {
+                      "type": "integer"
+                    },
+                    "filters": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/export": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Exportar kanban items (CSV)",
+        "description": "Exporta itens do funil em CSV (funnel_id obrigatório; filtros opcionais)",
+        "operationId": "exportKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "funnel_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "priorities",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "value_min",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "value_max",
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "date_start",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "date_end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "scheduled_date_start",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "scheduled_date_end",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Arquivo CSV",
+            "content": {
+              "text/csv": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/import": {
+      "post": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Importar kanban items (CSV)",
+        "description": "Importa itens a partir de CSV (funnel_id, file, mappings, default_stage_id)",
+        "operationId": "importKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "funnel_id": {
+                    "type": "integer"
+                  },
+                  "default_stage_id": {
+                    "type": "string"
+                  },
+                  "mappings": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    }
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resultado da importação (created_count, error_count, errors)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "created_count": {
+                      "type": "integer"
+                    },
+                    "error_count": {
+                      "type": "integer"
+                    },
+                    "total_rows": {
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "type": "array"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/bulk_move_items": {
+      "post": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Mover múltiplos itens de etapa",
+        "description": "Move vários itens para uma nova etapa (item_ids, new_stage, funnel_id opcional)",
+        "operationId": "bulkMoveKanbanItems",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "item_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    },
+                    "example": [
+                      1,
+                      2,
+                      3
+                    ]
+                  },
+                  "new_stage": {
+                    "type": "string",
+                    "example": "prospect"
+                  },
+                  "funnel_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "item_ids",
+                  "new_stage"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "moved_count, total_requested, errors, new_stage",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "moved_count": {
+                      "type": "integer"
+                    },
+                    "total_requested": {
+                      "type": "integer"
+                    },
+                    "errors": {
+                      "type": "array"
+                    },
+                    "new_stage": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/bulk_assign_agent": {
+      "post": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Atribuir agente em massa",
+        "description": "Atribui um agente a múltiplos itens (item_ids, agent_id, mode: replace ou add)",
+        "operationId": "bulkAssignAgent",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "item_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "agent_id": {
+                    "type": "integer"
+                  },
+                  "mode": {
+                    "type": "string",
+                    "enum": [
+                      "replace",
+                      "add"
+                    ],
+                    "default": "replace"
+                  }
+                },
+                "required": [
+                  "item_ids",
+                  "agent_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "assigned_count, total_requested, errors, agent_id, agent_name, mode",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/bulk_set_priority": {
+      "post": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Definir prioridade em massa",
+        "description": "Aplica prioridade a múltiplos itens (item_ids, priority: high, medium, low, urgent, none)",
+        "operationId": "bulkSetPriority",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "item_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer"
+                    }
+                  },
+                  "priority": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low",
+                      "urgent",
+                      "none"
+                    ]
+                  }
+                },
+                "required": [
+                  "item_ids",
+                  "priority"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "updated_count, total_requested, errors, priority",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/get_notes": {
+      "get": {
+        "tags": [
+          "Notes"
+        ],
+        "summary": "Listar notas do item",
+        "description": "Retorna as notas do kanban item",
+        "operationId": "getNotes",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, notes, notes_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item_id": {
+                      "type": "integer"
+                    },
+                    "notes": {
+                      "type": "array"
+                    },
+                    "notes_count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/update_note": {
+      "patch": {
+        "tags": [
+          "Notes"
+        ],
+        "summary": "Atualizar nota",
+        "description": "Atualiza uma nota do item (note_id no body; text, attachments, linked_item_id, linked_conversation_id, linked_contact_id)",
+        "operationId": "updateNote",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note_id": {
+                    "type": "string",
+                    "description": "ID da nota"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "attachments": {
+                    "type": "array"
+                  },
+                  "linked_item_id": {
+                    "type": "integer"
+                  },
+                  "linked_conversation_id": {
+                    "type": "integer"
+                  },
+                  "linked_contact_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "note_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kanban item atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanbanItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/delete_note": {
+      "delete": {
+        "tags": [
+          "Notes"
+        ],
+        "summary": "Excluir nota",
+        "description": "Remove uma nota do item (note_id no body ou query)",
+        "operationId": "deleteNote",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "note_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "note_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kanban item atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanbanItem"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/get_checklist": {
+      "get": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Listar checklist do item",
+        "description": "Retorna o checklist do kanban item",
+        "operationId": "getChecklist",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, checklist, checklist_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "item_id": {
+                      "type": "integer"
+                    },
+                    "checklist": {
+                      "type": "array"
+                    },
+                    "checklist_count": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/delete_checklist_item": {
+      "delete": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Excluir item do checklist",
+        "description": "Remove um item do checklist (checklist_item_id)",
+        "operationId": "deleteChecklistItem",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "checklist_item_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Kanban item atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanbanItem"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/update_checklist_item": {
+      "patch": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Atualizar item do checklist",
+        "description": "Atualiza um item do checklist (checklist_item_id; text, due_date, priority, agent_id, linked_*)",
+        "operationId": "updateChecklistItem",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "checklist_item_id": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "due_date": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "priority": {
+                    "type": "string"
+                  },
+                  "agent_id": {
+                    "type": "integer"
+                  },
+                  "linked_item_id": {
+                    "type": "integer"
+                  },
+                  "linked_conversation_id": {
+                    "type": "integer"
+                  },
+                  "linked_contact_id": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "checklist_item_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kanban item atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanbanItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/toggle_checklist_item": {
+      "post": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Marcar/desmarcar item do checklist",
+        "description": "Alterna o status completed de um item do checklist (checklist_item_id)",
+        "operationId": "toggleChecklistItem",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "checklist_item_id": {
+                    "type": "string",
+                    "description": "ID do item do checklist"
+                  }
+                },
+                "required": [
+                  "checklist_item_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Kanban item atualizado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KanbanItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/time_report": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Relatório de tempo do item",
+        "description": "Retorna tempo total gasto no item (timer_duration + sessão atual se timer rodando)",
+        "operationId": "timeReport",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, total_duration_seconds, total_duration_formatted, timer_started_at, is_timer_running",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/stage_time_breakdown": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Tempo por etapa",
+        "description": "Retorna o tempo gasto em cada etapa do funil para o item",
+        "operationId": "stageTimeBreakdown",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, stage_breakdown, total_stages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/duplicate_checklist": {
+      "post": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Duplicar checklist para outro item",
+        "description": "Copia o checklist deste item para outro (target_item_id; merge=true para mesclar)",
+        "operationId": "duplicateChecklist",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item origem",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target_item_id": {
+                    "type": "integer"
+                  },
+                  "merge": {
+                    "type": "string",
+                    "enum": [
+                      "true",
+                      "false"
+                    ],
+                    "description": "Se true, mescla com checklist existente do destino"
+                  }
+                },
+                "required": [
+                  "target_item_id"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "source_item_id, target_item_id, duplicated_items_count, total_items_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "422": {
+            "$ref": "#/components/responses/UnprocessableEntity"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/search_checklist": {
+      "get": {
+        "tags": [
+          "Checklist"
+        ],
+        "summary": "Buscar no checklist",
+        "description": "Busca itens do checklist por texto (query)",
+        "operationId": "searchChecklist",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, query, total_items, filtered_items, checklist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/counts": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Contagens do item",
+        "description": "Retorna contagem de notas, checklist e anexos",
+        "operationId": "countsKanbanItem",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, notes_count, checklist_count, attachments_count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/accounts/{account_id}/kanban_items/{id}/checklist_progress_by_agent": {
+      "get": {
+        "tags": [
+          "Kanban Items"
+        ],
+        "summary": "Progresso do checklist por agente",
+        "description": "Retorna progresso do checklist agrupado por agente atribuído",
+        "operationId": "checklistProgressByAgent",
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do item",
+            "schema": {
+              "type": "integer"
+            },
+            "example": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "item_id, checklist_total_items, progress_by_agent, summary",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
           },
           "404": {
             "$ref": "#/components/responses/NotFound"
@@ -3803,516 +4953,6 @@
         },
         "required": [
           "scheduled_message"
-        ]
-      },
-      "TimeReport": {
-        "type": "object",
-        "description": "Relatório de tempo gasto no item",
-        "properties": {
-          "item_id": {
-            "type": "integer",
-            "description": "ID do item",
-            "example": 123
-          },
-          "total_duration_seconds": {
-            "type": "integer",
-            "description": "Duração total em segundos",
-            "example": 3600
-          },
-          "total_duration_formatted": {
-            "type": "string",
-            "description": "Duração formatada (ex: 1h 0m 0s)",
-            "example": "1h 0m 0s"
-          },
-          "timer_started_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Data/hora em que o timer foi iniciado",
-            "example": "2024-01-15T10:30:00Z"
-          },
-          "is_timer_running": {
-            "type": "boolean",
-            "description": "Se o timer está rodando atualmente",
-            "example": true
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Data de criação do item",
-            "example": "2024-01-15T09:00:00Z"
-          }
-        },
-        "required": [
-          "item_id",
-          "total_duration_seconds",
-          "total_duration_formatted",
-          "is_timer_running",
-          "created_at"
-        ]
-      },
-      "StageTimeBreakdown": {
-        "type": "object",
-        "description": "Detalhamento de tempo gasto em cada etapa",
-        "properties": {
-          "item_id": {
-            "type": "integer",
-            "description": "ID do item",
-            "example": 123
-          },
-          "stage_breakdown": {
-            "type": "object",
-            "description": "Detalhamento por etapa",
-            "additionalProperties": {
-              "type": "object",
-              "properties": {
-                "stage": {
-                  "type": "string",
-                  "description": "Nome da etapa",
-                  "example": "qualified"
-                },
-                "entered_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Data/hora de entrada na etapa",
-                  "example": "2024-01-15T09:30:00Z"
-                },
-                "duration_seconds": {
-                  "type": "integer",
-                  "description": "Duração em segundos na etapa",
-                  "example": 1800
-                },
-                "duration_formatted": {
-                  "type": "string",
-                  "description": "Duração formatada",
-                  "example": "30m 0s"
-                }
-              }
-            }
-          },
-          "total_stages": {
-            "type": "integer",
-            "description": "Total de etapas percorridas",
-            "example": 2
-          }
-        },
-        "required": [
-          "item_id",
-          "stage_breakdown",
-          "total_stages"
-        ]
-      },
-      "DuplicateChecklistRequest": {
-        "type": "object",
-        "description": "Dados para duplicação do checklist",
-        "properties": {
-          "target_item_id": {
-            "type": "integer",
-            "description": "ID do item que receberá o checklist duplicado",
-            "example": 456
-          },
-          "merge": {
-            "type": "string",
-            "description": "true para mesclar, false para substituir",
-            "enum": [
-              "true",
-              "false"
-            ],
-            "example": "true"
-          }
-        },
-        "required": [
-          "target_item_id"
-        ]
-      },
-      "DuplicateChecklistResponse": {
-        "type": "object",
-        "description": "Resposta da duplicação do checklist",
-        "properties": {
-          "source_item_id": {
-            "type": "integer",
-            "description": "ID do item fonte",
-            "example": 123
-          },
-          "target_item_id": {
-            "type": "integer",
-            "description": "ID do item destino",
-            "example": 456
-          },
-          "duplicated_items_count": {
-            "type": "integer",
-            "description": "Número de itens duplicados",
-            "example": 5
-          },
-          "total_items_count": {
-            "type": "integer",
-            "description": "Total de itens no checklist destino",
-            "example": 8
-          }
-        },
-        "required": [
-          "source_item_id",
-          "target_item_id",
-          "duplicated_items_count",
-          "total_items_count"
-        ]
-      },
-      "SearchChecklistResponse": {
-        "type": "object",
-        "description": "Resposta da busca no checklist",
-        "properties": {
-          "item_id": {
-            "type": "integer",
-            "description": "ID do item",
-            "example": 123
-          },
-          "query": {
-            "type": "string",
-            "description": "Termo de busca usado",
-            "example": "documentacao"
-          },
-          "total_items": {
-            "type": "integer",
-            "description": "Total de itens no checklist",
-            "example": 10
-          },
-          "filtered_items": {
-            "type": "integer",
-            "description": "Número de itens encontrados",
-            "example": 2
-          },
-          "attachments_count": {
-            "type": "object",
-            "description": "Contagem de anexos",
-            "properties": {
-              "total_count": {
-                "type": "integer",
-                "description": "Total de anexos",
-                "example": 5
-              }
-            }
-          },
-          "notes_count": {
-            "type": "object",
-            "description": "Contagem de notas",
-            "properties": {
-              "total_count": {
-                "type": "integer",
-                "description": "Total de notas",
-                "example": 3
-              }
-            }
-          },
-          "checklist": {
-            "type": "array",
-            "description": "Lista de itens encontrados",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "string",
-                  "description": "ID único do item",
-                  "example": "uuid-1"
-                },
-                "text": {
-                  "type": "string",
-                  "description": "Texto do item",
-                  "example": "Criar documentacao da API"
-                },
-                "completed": {
-                  "type": "boolean",
-                  "description": "Se o item está completo",
-                  "example": false
-                },
-                "created_at": {
-                  "type": "string",
-                  "format": "date-time",
-                  "description": "Data de criação",
-                  "example": "2024-01-15T10:00:00Z"
-                }
-              }
-            }
-          }
-        },
-        "required": [
-          "item_id",
-          "total_items",
-          "filtered_items",
-          "checklist"
-        ]
-      },
-      "BulkMoveItemsRequest": {
-        "type": "object",
-        "description": "Dados para mover itens em massa",
-        "properties": {
-          "item_ids": {
-            "type": "array",
-            "description": "IDs dos itens a serem movidos",
-            "items": {
-              "type": "integer"
-            },
-            "example": [
-              123,
-              456,
-              789
-            ]
-          },
-          "new_stage": {
-            "type": "string",
-            "description": "Nova etapa para os itens",
-            "example": "qualified"
-          },
-          "funnel_id": {
-            "type": "integer",
-            "description": "ID do funil (opcional)",
-            "example": 1
-          }
-        },
-        "required": [
-          "item_ids",
-          "new_stage"
-        ]
-      },
-      "BulkMoveItemsResponse": {
-        "type": "object",
-        "description": "Resposta da operação de mover itens em massa",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Se a operação foi bem-sucedida",
-            "example": true
-          },
-          "moved_count": {
-            "type": "integer",
-            "description": "Número de itens movidos com sucesso",
-            "example": 3
-          },
-          "total_requested": {
-            "type": "integer",
-            "description": "Total de itens solicitados para mover",
-            "example": 3
-          },
-          "errors": {
-            "type": "array",
-            "description": "Lista de erros (se houver)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "item_id": {
-                  "type": "integer",
-                  "description": "ID do item com erro"
-                },
-                "error": {
-                  "type": "string",
-                  "description": "Descrição do erro"
-                }
-              }
-            }
-          },
-          "new_stage": {
-            "type": "string",
-            "description": "Nova etapa aplicada",
-            "example": "qualified"
-          }
-        },
-        "required": [
-          "success",
-          "moved_count",
-          "total_requested",
-          "errors",
-          "new_stage"
-        ]
-      },
-      "BulkAssignAgentRequest": {
-        "type": "object",
-        "description": "Dados para atribuir agente em massa",
-        "properties": {
-          "item_ids": {
-            "type": "array",
-            "description": "IDs dos itens",
-            "items": {
-              "type": "integer"
-            },
-            "example": [
-              123,
-              456,
-              789
-            ]
-          },
-          "agent_id": {
-            "type": "integer",
-            "description": "ID do agente a ser atribuído",
-            "example": 42
-          },
-          "mode": {
-            "type": "string",
-            "description": "Modo de atribuição",
-            "enum": [
-              "replace",
-              "add"
-            ],
-            "default": "replace",
-            "example": "add"
-          }
-        },
-        "required": [
-          "item_ids",
-          "agent_id"
-        ]
-      },
-      "BulkAssignAgentResponse": {
-        "type": "object",
-        "description": "Resposta da operação de atribuir agente em massa",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Se a operação foi bem-sucedida",
-            "example": true
-          },
-          "assigned_count": {
-            "type": "integer",
-            "description": "Número de itens com agente atribuído",
-            "example": 3
-          },
-          "total_requested": {
-            "type": "integer",
-            "description": "Total de itens solicitados",
-            "example": 3
-          },
-          "errors": {
-            "type": "array",
-            "description": "Lista de erros (se houver)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "item_id": {
-                  "type": "integer",
-                  "description": "ID do item com erro"
-                },
-                "error": {
-                  "type": "string",
-                  "description": "Descrição do erro"
-                }
-              }
-            }
-          },
-          "agent_id": {
-            "type": "integer",
-            "description": "ID do agente atribuído",
-            "example": 42
-          },
-          "agent_name": {
-            "type": "string",
-            "description": "Nome do agente atribuído",
-            "example": "João Silva"
-          },
-          "mode": {
-            "type": "string",
-            "description": "Modo usado na atribuição",
-            "enum": [
-              "replace",
-              "add"
-            ],
-            "example": "add"
-          }
-        },
-        "required": [
-          "success",
-          "assigned_count",
-          "total_requested",
-          "errors",
-          "agent_id",
-          "mode"
-        ]
-      },
-      "BulkSetPriorityRequest": {
-        "type": "object",
-        "description": "Dados para definir prioridade em massa",
-        "properties": {
-          "item_ids": {
-            "type": "array",
-            "description": "IDs dos itens",
-            "items": {
-              "type": "integer"
-            },
-            "example": [
-              123,
-              456,
-              789
-            ]
-          },
-          "priority": {
-            "type": "string",
-            "description": "Prioridade a ser definida",
-            "enum": [
-              "high",
-              "medium",
-              "low",
-              "urgent",
-              "none"
-            ],
-            "example": "high"
-          }
-        },
-        "required": [
-          "item_ids",
-          "priority"
-        ]
-      },
-      "BulkSetPriorityResponse": {
-        "type": "object",
-        "description": "Resposta da operação de definir prioridade em massa",
-        "properties": {
-          "success": {
-            "type": "boolean",
-            "description": "Se a operação foi bem-sucedida",
-            "example": true
-          },
-          "updated_count": {
-            "type": "integer",
-            "description": "Número de itens atualizados",
-            "example": 3
-          },
-          "total_requested": {
-            "type": "integer",
-            "description": "Total de itens solicitados",
-            "example": 3
-          },
-          "errors": {
-            "type": "array",
-            "description": "Lista de erros (se houver)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "item_id": {
-                  "type": "integer",
-                  "description": "ID do item com erro"
-                },
-                "error": {
-                  "type": "string",
-                  "description": "Descrição do erro"
-                }
-              }
-            }
-          },
-          "priority": {
-            "type": "string",
-            "description": "Prioridade definida",
-            "enum": [
-              "high",
-              "medium",
-              "low",
-              "urgent",
-              "none"
-            ],
-            "example": "high"
-          }
-        },
-        "required": [
-          "success",
-          "updated_count",
-          "total_requested",
-          "errors",
-          "priority"
         ]
       }
     }
