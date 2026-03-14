@@ -44,6 +44,18 @@
         .playground-input:focus { border-color: #3b82f6; }
         html:not(.dark) .playground-input { background-color: #f9fafb; border: 1px solid #e5e7eb; color: #111827; }
         html:not(.dark) .playground-input:focus { border-color: #2563eb; }
+
+        /* Estilos de Impressão (Exportar PDF) */
+        @media print {
+            header, #sidebar, #mobile-overlay, #loader, .tab-btns, button:not(.print-keep), form { display: none !important; }
+            #main-content { margin: 0 !important; padding: 0 !important; width: 100% !important; background: white !important; }
+            body { background: white !important; color: black !important; }
+            .endpoint-card { page-break-inside: avoid; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+            .dark .text-white { color: #000 !important; }
+            .dark .text-gray-400 { color: #333 !important; }
+            .dark .bg-\[\#111827\] { background-color: #f9fafb !important; color: #000 !important; }
+            .dark .bg-\[\#1f2937\] { background-color: #e5e7eb !important; color: #000 !important; }
+        }
     </style>
 
     <script>
@@ -62,7 +74,7 @@
                 <img src="https://s3storage.lexsec.shop/logos/Logo%20LexSec_Logo.png" alt="Logo LexSec" class="h-8 object-contain">
             </div>
             
-            <div class="hidden md:flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div class="hidden md:flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg border border-gray-200 dark:border-gray-700 tab-btns">
                 <button onclick="changeTab('kanban')" id="tab-kanban" class="px-4 py-1.5 text-sm font-medium rounded-md transition-all flex items-center text-brand-600 bg-white dark:bg-gray-900 shadow-sm">
                     <i class="fa-solid fa-diagram-project mr-2"></i> API Kanban
                 </button>
@@ -91,21 +103,29 @@
                 <button type="submit" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-1.5 text-sm font-medium rounded-lg transition-colors shadow-sm">
                     Salvar
                 </button>
+
+                <div class="group/badge relative flex items-center justify-center text-emerald-600 dark:text-emerald-500 cursor-help ml-2 p-2">
+                    <i class="fa-solid fa-shield-halved text-lg"></i>
+                    <div class="absolute top-full right-0 mt-2 w-72 p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all z-50 text-xs text-gray-600 dark:text-gray-300 text-left">
+                        <strong class="text-gray-900 dark:text-white block mb-1"><i class="fa-solid fa-lock mr-1"></i> Privacy by Design</strong>
+                        A URL e o Token inseridos são processados <b>exclusivamente</b> no armazenamento local do seu navegador (Client-Side). Nenhum dado sensível transita ou é salvo nos servidores da LexSec.
+                    </div>
+                </div>
             </form>
 
             <div class="h-6 w-px bg-gray-300 dark:bg-gray-700 hidden md:block"></div>
 
-            <button id="lang-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none flex items-center space-x-1" title="Mudar Idioma">
+            <button id="lang-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none flex items-center space-x-1 tab-btns" title="Mudar Idioma">
                 <i class="fa-solid fa-language text-lg"></i>
                 <span id="current-lang-text" class="text-xs font-bold uppercase">PT</span>
             </button>
 
-            <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none" title="Mudar Tema">
+            <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors focus:outline-none tab-btns" title="Mudar Tema">
                 <i id="theme-toggle-dark-icon" class="fa-solid fa-moon hidden text-lg"></i>
                 <i id="theme-toggle-light-icon" class="fa-solid fa-sun hidden text-lg"></i>
             </button>
             
-            <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 dark:text-gray-300">
+            <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 dark:text-gray-300 tab-btns">
                 <i class="fa-solid fa-bars text-xl"></i>
             </button>
         </div>
@@ -174,6 +194,9 @@
         let apiData = null; 
         let currentLang = localStorage.getItem('api-lang') || 'pt';
 
+        // Constantes do Cache
+        const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas em milissegundos
+
         // URLs de Dados
         const URL_KANBAN_API = './api-1.json';
         const URL_OFFICIAL_API = 'https://raw.githubusercontent.com/chatwoot/chatwoot/develop/swagger/swagger.json';
@@ -192,14 +215,16 @@
                 noDesc: "Sem descrição disponível.",
                 codeExample: "Exemplo de Código",
                 testApi: "Testar API",
-                requestExample: "Exemplo de Requisição",
+                requestExample: "Requisição",
                 responseSuccess: "Exemplo de Resposta (Sucesso)",
                 noExample: "Nenhum exemplo estruturado retornado.",
-                fillFields: "Preencha os campos abaixo para testar esta rota em tempo real. O <code>api_access_token</code> será puxado do cabeçalho da página.",
+                fillFields: "Preencha os campos abaixo para testar. Os dados preenchidos serão salvos por 24 horas no seu navegador.",
                 sendRequest: "Enviar Requisição",
                 serverResponse: "Resposta do Servidor:",
                 bodyLabel: "Corpo (JSON)",
-                invalidJson: "O formato do JSON no Corpo é inválido. Corrija e tente novamente."
+                invalidJson: "O formato do JSON no Corpo é inválido. Corrija e tente novamente.",
+                exportPDF: "Baixar PDF",
+                exportPostman: "Baixar Postman"
             },
             en: {
                 searchPlaceholder: "Search endpoints...",
@@ -211,14 +236,16 @@
                 noDesc: "No description available.",
                 codeExample: "Code Example",
                 testApi: "Test API",
-                requestExample: "Request Example",
+                requestExample: "Request",
                 responseSuccess: "Response Example (Success)",
                 noExample: "No structured example returned.",
-                fillFields: "Fill the fields below to test this route in real time. The <code>api_access_token</code> will be fetched from the page header.",
+                fillFields: "Fill the fields below to test. Data will be cached locally for 24 hours.",
                 sendRequest: "Send Request",
                 serverResponse: "Server Response:",
                 bodyLabel: "Body (JSON)",
-                invalidJson: "Invalid JSON format in Body. Please fix and try again."
+                invalidJson: "Invalid JSON format in Body. Please fix and try again.",
+                exportPDF: "Download PDF",
+                exportPostman: "Download Postman"
             }
         };
 
@@ -270,7 +297,6 @@
             let t = text;
             if (lang === 'pt') {
                 t = t.replace(/This is the API documentation for Chatwoot server\.?/gi, "Esta é a documentação da API para o servidor Chatwoot.");
-                
                 t = t.replace(/List all/gi, "Listar todos(as)");
                 t = t.replace(/List/g, "Listar");
                 t = t.replace(/Create a new/gi, "Criar um(a) novo(a)");
@@ -342,7 +368,71 @@
         }
 
         // ==========================================
-        // 2. UTILITÁRIOS E UI
+        // 2. FUNÇÕES DE EXPORTAÇÃO (POSTMAN / PDF)
+        // ==========================================
+        window.exportPostman = function() {
+            if(!apiData) return;
+            const collection = {
+                info: {
+                    name: apiData.info.title || "LexSec API Documentation",
+                    schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+                },
+                item: apiData.categories.map(cat => ({
+                    name: cat.name,
+                    item: cat.endpoints.map(ep => ({
+                        name: translateText(ep.summary, currentLang),
+                        request: {
+                            method: ep.method,
+                            header: [
+                                { key: "api_access_token", value: globalToken || "{{api_access_token}}", type: "text" },
+                                ...(ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH' ? [{key: "Content-Type", value: "application/json"}] : [])
+                            ],
+                            url: { raw: ep.fullUrl, host: [ep.fullUrl] },
+                            body: (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') ? {
+                                mode: "raw",
+                                raw: ep.bodyExample ? JSON.stringify(ep.bodyExample, null, 2) : "{}"
+                            } : undefined
+                        }
+                    }))
+                }))
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(collection, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `Postman_${currentTab}_API.json`);
+            dlAnchorElem.click();
+        }
+
+        window.exportPDF = function() {
+            alert(currentLang === 'pt' ? "O navegador abrirá a tela de impressão. Escolha a opção 'Salvar como PDF' como destino." : "The browser will open the print dialog. Choose 'Save as PDF' as the destination.");
+            window.print();
+        }
+
+        // ==========================================
+        // 3. CACHE LOCAL (PLAYGROUND)
+        // ==========================================
+        function savePlaygroundCache(endpointId, pathVals, queryVals, bodyVal) {
+            const data = { timestamp: Date.now(), path: pathVals, query: queryVals, body: bodyVal };
+            localStorage.setItem(`api_cache_${endpointId}`, JSON.stringify(data));
+        }
+
+        function getPlaygroundCache(endpointId) {
+            const raw = localStorage.getItem(`api_cache_${endpointId}`);
+            if (!raw) return { path: {}, query: {}, body: null };
+            try {
+                const data = JSON.parse(raw);
+                if (Date.now() - data.timestamp > CACHE_TTL) {
+                    localStorage.removeItem(`api_cache_${endpointId}`);
+                    return { path: {}, query: {}, body: null };
+                }
+                return data;
+            } catch (e) {
+                return { path: {}, query: {}, body: null };
+            }
+        }
+
+        // ==========================================
+        // 4. UTILITÁRIOS E UI
         // ==========================================
         function initTheme() {
             if (!themeToggleBtn) return;
@@ -427,24 +517,24 @@
             });
         }
 
-        window.copyCurl = function(btn) {
-            const textToCopy = decodeURIComponent(btn.getAttribute('data-curl'));
+        window.copyDataSnippet = function(btn) {
+            const textToCopy = decodeURIComponent(btn.getAttribute('data-clipboard'));
             navigator.clipboard.writeText(textToCopy).then(() => {
                 const originalHtml = btn.innerHTML;
                 btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i>';
                 setTimeout(() => btn.innerHTML = originalHtml, 2000);
             }).catch(err => {
                 console.error("Erro ao copiar: ", err);
-                alert("Ocorreu um erro ao copiar o comando.");
+                alert("Ocorreu um erro ao copiar.");
             });
         }
 
+        // Alterna entre abas Principais (Exemplo Código vs Testar API)
         window.switchPlaygroundTab = function(endpointId, tabType) {
             const codeTabBtn = document.getElementById(`tab-btn-code-${endpointId}`);
             const testTabBtn = document.getElementById(`tab-btn-test-${endpointId}`);
             const codeView = document.getElementById(`view-code-${endpointId}`);
             const testView = document.getElementById(`view-test-${endpointId}`);
-
             const activeClass = "border-b-2 border-brand-500 text-gray-900 dark:text-white font-medium";
             const inactiveClass = "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300";
 
@@ -461,8 +551,24 @@
             }
         }
 
+        // Alterna entre abas de Linguagem (cURL, Axios, N8N)
+        window.switchLanguageSnippet = function(endpointId, langType) {
+            const types = ['curl', 'axios', 'n8n'];
+            types.forEach(type => {
+                const btn = document.getElementById(`lang-btn-${type}-${endpointId}`);
+                const pre = document.getElementById(`lang-pre-${type}-${endpointId}`);
+                if (type === langType) {
+                    btn.className = "px-3 py-1.5 bg-[#111827] text-white rounded-t text-xs font-medium border-t border-l border-r border-gray-700";
+                    pre.classList.remove('hidden');
+                } else {
+                    btn.className = "px-3 py-1.5 text-gray-400 hover:text-white rounded-t text-xs";
+                    pre.classList.add('hidden');
+                }
+            });
+        }
+
         // ==========================================
-        // 3. PARSER DO OPENAPI
+        // 5. PARSER DO OPENAPI
         // ==========================================
         function resolveRef(ref, spec) {
             if(!ref) return null;
@@ -514,7 +620,6 @@
             if(rawSpec.paths) {
                 Object.keys(rawSpec.paths).forEach(path => {
                     const pathItem = rawSpec.paths[path];
-                    
                     const pathLevelParams = pathItem.parameters || [];
                     
                     Object.keys(pathItem).forEach(method => {
@@ -527,7 +632,6 @@
 
                         const opLevelParams = op.parameters || [];
                         const rawParams = [...pathLevelParams, ...opLevelParams];
-                        
                         const resolvedParams = rawParams.map(p => p.$ref ? (resolveRef(p.$ref, rawSpec) || p) : p);
                         
                         const paramMap = new Map();
@@ -586,7 +690,7 @@
         }
 
         // ==========================================
-        // 4. RENDERIZAÇÃO
+        // 6. RENDERIZAÇÃO DOM
         // ==========================================
         function getMethodStyle(method) {
             const styles = {
@@ -631,7 +735,19 @@
             
             let html = `
                 <div class="mb-16 border-b border-gray-200 dark:border-gray-800 pb-12 pt-8">
-                    <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">${data.info.title || 'API Documentation'}</h1>
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <h1 class="text-4xl font-bold text-gray-900 dark:text-white">${data.info.title || 'API Documentation'}</h1>
+                        
+                        <div class="flex gap-2">
+                            <button onclick="exportPostman()" class="bg-[#ff6c37] hover:bg-[#e65a29] text-white px-3 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center shadow-sm transition-colors print-keep" title="Download Postman Collection">
+                                <i class="fa-solid fa-rocket mr-2"></i> ${uiText.exportPostman}
+                            </button>
+                            <button onclick="exportPDF()" class="bg-rose-600 hover:bg-rose-700 text-white px-3 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center shadow-sm transition-colors print-keep" title="Gerar PDF da Documentação">
+                                <i class="fa-solid fa-file-pdf mr-2"></i> ${uiText.exportPDF}
+                            </button>
+                        </div>
+                    </div>
+
                     <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl prose dark:prose-invert">${infoDesc ? infoDesc.replace(/\n/g, '<br>') : ''}</p>
                     
                     <div class="mt-8 flex flex-col md:flex-row gap-4 items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 max-w-2xl">
@@ -653,6 +769,9 @@
                 html += `<h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8 py-4 border-b border-gray-100 dark:border-gray-800">${translatedCat}</h2>`;
                 
                 cat.endpoints.forEach(ep => {
+                    // Puxa o Cache do Playground salvo para este endpoint
+                    const pCache = getPlaygroundCache(ep.id);
+
                     const style = getMethodStyle(ep.method);
                     const translatedSum = translateText(ep.summary, currentLang);
                     const translatedDesc = translateText(ep.description, currentLang);
@@ -680,38 +799,68 @@
                         paramsHtml += `</ul>`;
                     }
 
+                    // Prepara JSON do Body
                     const jsonBodyStr = ep.bodyExample ? JSON.stringify(ep.bodyExample, null, 2) : '';
                     const escapedBodyStr = jsonBodyStr.replace(/'/g, "'\\''"); 
+
+                    // GERADOR DE SNIPPETS: cURL
                     let curlCode = `curl -X ${ep.method} "${ep.fullUrl}" \\\n  -H "api_access_token: ${displayToken}"`;
                     if(ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
                         curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${escapedBodyStr || '{}'}'`;
                     }
-
                     const encodedCurl = encodeURIComponent(curlCode);
 
+                    // GERADOR DE SNIPPETS: Axios
+                    const axiosBody = (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') ? `\n  data: ${jsonBodyStr || '{}'}` : '';
+                    const axiosHeaders = `{\n    'api_access_token': '${displayToken}'${ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH' ? `,\n    'Content-Type': 'application/json'` : ''}\n  }`;
+                    const axiosCode = `const axios = require('axios');\n\nlet config = {\n  method: '${ep.method.toLowerCase()}',\n  url: '${ep.fullUrl}',\n  headers: ${axiosHeaders}${axiosBody}\n};\n\naxios.request(config)\n.then((response) => {\n  console.log(JSON.stringify(response.data));\n})\n.catch((error) => {\n  console.log(error);\n});`;
+                    const encodedAxios = encodeURIComponent(axiosCode);
+
+                    // GERADOR DE SNIPPETS: N8N
+                    const n8nNode = {
+                        parameters: {
+                            method: ep.method,
+                            url: ep.fullUrl,
+                            sendHeaders: true,
+                            headerParameters: { parameters: [ { name: "api_access_token", value: displayToken } ] },
+                            sendBody: (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH'),
+                            specifyBody: "json",
+                            jsonBody: jsonBodyStr || "{}"
+                        },
+                        name: ep.summary,
+                        type: "n8n-nodes-base.httpRequest",
+                        typeVersion: 4.1,
+                        position: [0, 0]
+                    };
+                    const n8nCode = JSON.stringify(n8nNode, null, 2);
+                    const encodedN8n = encodeURIComponent(n8nCode);
+
+                    // GERADOR DE FORMULÁRIOS DE TESTE (PLAYGROUND) (COM CACHE)
                     let testInputsHtml = '';
                     pathParams.forEach(p => {
+                        const cachedVal = pCache.path[p.name] || p.example || p.schema?.example || '';
                         testInputsHtml += `
                             <div class="mb-3">
                                 <label class="block text-xs text-gray-400 mb-1">${p.name} <span class="text-rose-500">*</span></label>
-                                <input type="text" id="input-${ep.id}-path-${p.name}" class="playground-input" placeholder="${p.example || p.schema?.example || ''}">
+                                <input type="text" id="input-${ep.id}-path-${p.name}" class="playground-input" value="${cachedVal}">
                             </div>`;
                     });
                     queryParams.forEach(p => {
+                        const cachedVal = pCache.query[p.name] || p.example || p.schema?.example || '';
                         testInputsHtml += `
                             <div class="mb-3">
                                 <label class="block text-xs text-gray-400 mb-1">${p.name} ${p.required ? '<span class="text-rose-500">*</span>' : ''}</label>
-                                <input type="text" id="input-${ep.id}-query-${p.name}" class="playground-input" placeholder="${p.example || p.schema?.example || ''}">
+                                <input type="text" id="input-${ep.id}-query-${p.name}" class="playground-input" value="${cachedVal}">
                             </div>`;
                     });
 
                     let bodyEditorHtml = '';
                     if (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
-                        const defaultBodyValue = jsonBodyStr || '{\n  \n}';
+                        const cachedBody = pCache.body !== null ? pCache.body : (jsonBodyStr || '{\n  \n}');
                         bodyEditorHtml = `
                             <div class="mb-4">
                                 <label class="block text-xs text-gray-400 mb-1">${uiText.bodyLabel}</label>
-                                <textarea id="input-${ep.id}-body" rows="6" class="playground-input font-mono text-xs">${defaultBodyValue}</textarea>
+                                <textarea id="input-${ep.id}-body" rows="6" class="playground-input font-mono text-xs">${cachedBody}</textarea>
                             </div>
                         `;
                     }
@@ -744,13 +893,27 @@
                                 </div>
 
                                 <div id="view-code-${ep.id}" class="flex flex-col">
-                                    <div class="bg-[#1f2937] px-4 py-2 flex items-center justify-between border-b border-gray-800">
-                                        <span class="text-xs font-medium text-gray-400">${uiText.requestExample}</span>
-                                        <button onclick="copyCurl(this)" data-curl="${encodedCurl}" class="text-gray-400 hover:text-white transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+                                    <div class="flex border-b border-gray-800 bg-[#1f2937] px-2 pt-2 gap-1 text-xs">
+                                        <button onclick="switchLanguageSnippet('${ep.id}', 'curl')" id="lang-btn-curl-${ep.id}" class="px-3 py-1.5 bg-[#111827] text-white rounded-t font-medium border-t border-l border-r border-gray-700">cURL</button>
+                                        <button onclick="switchLanguageSnippet('${ep.id}', 'axios')" id="lang-btn-axios-${ep.id}" class="px-3 py-1.5 text-gray-400 hover:text-white rounded-t">Axios (JS)</button>
+                                        <button onclick="switchLanguageSnippet('${ep.id}', 'n8n')" id="lang-btn-n8n-${ep.id}" class="px-3 py-1.5 text-gray-400 hover:text-white rounded-t flex items-center"><img src="https://n8n.io/favicon.ico" class="w-3 h-3 mr-1 opacity-70"> N8N Node</button>
                                     </div>
-                                    <div class="p-4 bg-[#111827] overflow-x-auto">
-                                        <pre><code class="text-sm text-gray-300 font-mono">${curlCode}</code></pre>
+
+                                    <div class="p-4 bg-[#111827] overflow-x-auto relative group">
+                                        <div id="lang-pre-curl-${ep.id}" class="block relative">
+                                            <button onclick="copyDataSnippet(this)" data-clipboard="${encodedCurl}" class="absolute top-0 right-0 text-gray-400 hover:text-white hidden group-hover:block transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+                                            <pre><code class="text-sm text-gray-300 font-mono">${curlCode}</code></pre>
+                                        </div>
+                                        <div id="lang-pre-axios-${ep.id}" class="hidden relative">
+                                            <button onclick="copyDataSnippet(this)" data-clipboard="${encodedAxios}" class="absolute top-0 right-0 text-gray-400 hover:text-white hidden group-hover:block transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+                                            <pre><code class="text-sm text-gray-300 font-mono">${axiosCode}</code></pre>
+                                        </div>
+                                        <div id="lang-pre-n8n-${ep.id}" class="hidden relative">
+                                            <button onclick="copyDataSnippet(this)" data-clipboard="${encodedN8n}" class="absolute top-0 right-0 text-gray-400 hover:text-white hidden group-hover:block transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+                                            <pre><code class="text-sm text-gray-300 font-mono">${n8nCode}</code></pre>
+                                        </div>
                                     </div>
+
                                     <div class="bg-[#1f2937] px-4 py-2 flex items-center justify-between border-y border-gray-800">
                                         <span class="text-xs font-medium text-gray-400">${uiText.responseSuccess}</span>
                                     </div>
@@ -793,7 +956,7 @@
         }
 
         // ==========================================
-        // 5. LÓGICA DE CHAMADA DA API (PLAYGROUND)
+        // 7. LÓGICA DE CHAMADA DA API (PLAYGROUND)
         // ==========================================
         window.executeApiCall = async function(endpointId, method, originalUrl) {
             const spinner = document.getElementById(`spinner-${endpointId}`);
@@ -809,11 +972,14 @@
             
             let finalUrl = originalUrl;
             let queryParams = [];
+            let cachePaths = {};
+            let cacheQueries = {};
 
             const pathInputs = document.querySelectorAll(`[id^="input-${endpointId}-path-"]`);
             pathInputs.forEach(input => {
                 const paramName = input.id.replace(`input-${endpointId}-path-`, '');
                 const val = input.value.trim();
+                cachePaths[paramName] = val; // Para o Cache
                 finalUrl = finalUrl.replace(`{${paramName}}`, val ? encodeURIComponent(val) : `{${paramName}}`);
             });
 
@@ -821,6 +987,7 @@
             queryInputs.forEach(input => {
                 const paramName = input.id.replace(`input-${endpointId}-query-`, '');
                 const val = input.value.trim();
+                cacheQueries[paramName] = val; // Para o Cache
                 if(val) queryParams.push(`${encodeURIComponent(paramName)}=${encodeURIComponent(val)}`);
             });
 
@@ -837,8 +1004,11 @@
             };
 
             const bodyInput = document.getElementById(`input-${endpointId}-body`);
+            let cacheBody = null;
+
             if (bodyInput && (method === 'POST' || method === 'PUT' || method === 'PATCH')) {
                 fetchOptions.headers['Content-Type'] = 'application/json';
+                cacheBody = bodyInput.value; // Salva texto cru para o cache
                 try {
                     const parsedBody = JSON.parse(bodyInput.value);
                     if (Object.keys(parsedBody).length > 0) {
@@ -850,6 +1020,9 @@
                     return;
                 }
             }
+
+            // Grava os dados da tentativa atual no Cache (dura 24h)
+            savePlaygroundCache(endpointId, cachePaths, cacheQueries, cacheBody);
 
             try {
                 const response = await fetch(finalUrl, fetchOptions);
@@ -883,7 +1056,7 @@
         }
 
         // ==========================================
-        // 6. CARREGAMENTO INICIAL
+        // 8. CARREGAMENTO INICIAL
         // ==========================================
         async function loadApiSpec() {
             showLoader();
