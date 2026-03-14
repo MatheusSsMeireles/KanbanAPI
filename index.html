@@ -283,32 +283,50 @@
             return text;
         }
 
-        function translateEndpointTitle(text, lang) {
+        // Traduz Títulos e Descrições mais comuns da API Oficial
+        function translateText(text, lang) {
             if (!text) return "";
+            if (lang === 'en') return text;
+            
             let t = text;
             if (lang === 'pt') {
-                t = t.replace(/^List all /i, "Listar todos os ");
-                t = t.replace(/^List /i, "Listar ");
-                t = t.replace(/^Create an /i, "Criar ");
-                t = t.replace(/^Create a /i, "Criar ");
-                t = t.replace(/^Create /i, "Criar ");
-                t = t.replace(/^Get an /i, "Obter ");
-                t = t.replace(/^Get a /i, "Obter ");
-                t = t.replace(/^Get /i, "Obter ");
-                t = t.replace(/^Update an /i, "Atualizar ");
-                t = t.replace(/^Update a /i, "Atualizar ");
-                t = t.replace(/^Update /i, "Atualizar ");
-                t = t.replace(/^Delete an /i, "Excluir ");
-                t = t.replace(/^Delete a /i, "Excluir ");
-                t = t.replace(/^Delete /i, "Excluir ");
+                // Info description
+                t = t.replace(/This is the API documentation for Chatwoot server\.?/gi, "Esta é a documentação da API para o servidor Chatwoot.");
+                
+                // Verbos comuns (no início ou meio)
+                t = t.replace(/List all/gi, "Listar todos(as)");
+                t = t.replace(/List/g, "Listar");
+                t = t.replace(/Create a new/gi, "Criar um(a) novo(a)");
+                t = t.replace(/Create an/gi, "Criar um(a)");
+                t = t.replace(/Create a/gi, "Criar um(a)");
+                t = t.replace(/Create/g, "Criar");
+                t = t.replace(/Get details of/gi, "Obter detalhes de");
+                t = t.replace(/Get the details of/gi, "Obter os detalhes de");
+                t = t.replace(/Get an/gi, "Obter um(a)");
+                t = t.replace(/Get a/gi, "Obter um(a)");
+                t = t.replace(/Get/g, "Obter");
+                t = t.replace(/Update an/gi, "Atualizar um(a)");
+                t = t.replace(/Update a/gi, "Atualizar um(a)");
+                t = t.replace(/Update/g, "Atualizar");
+                t = t.replace(/Delete an/gi, "Excluir um(a)");
+                t = t.replace(/Delete a/gi, "Excluir um(a)");
+                t = t.replace(/Delete/g, "Excluir");
+                t = t.replace(/Remove a/gi, "Remover um(a)");
+                t = t.replace(/Remove an/gi, "Remover um(a)");
+                t = t.replace(/Remove/g, "Remover");
+                t = t.replace(/Add a/gi, "Adicionar um(a)");
+                t = t.replace(/Add/g, "Adicionar");
+                t = t.replace(/Search/g, "Buscar");
 
-                t = t.replace(/details/gi, "detalhes");
+                // Substantivos e outros termos
                 t = t.replace(/Account Users/gi, "Usuários da Conta");
                 t = t.replace(/Account User/gi, "Usuário da Conta");
                 t = t.replace(/AgentBots/gi, "Robôs");
                 t = t.replace(/AgentBot/gi, "Robô");
                 t = t.replace(/Agent Bot/gi, "Robô");
+                t = t.replace(/Agents/gi, "Agentes");
                 t = t.replace(/Agent/gi, "Agente");
+                t = t.replace(/Accounts/gi, "Contas");
                 t = t.replace(/Account/gi, "Conta");
                 t = t.replace(/Users/gi, "Usuários");
                 t = t.replace(/User/gi, "Usuário");
@@ -322,26 +340,28 @@
                 t = t.replace(/Contact/gi, "Contato");
                 t = t.replace(/Teams/gi, "Equipes");
                 t = t.replace(/Team/gi, "Equipe");
-            } else if (lang === 'en') {
-                t = t.replace(/^Listar todos os /i, "List all ");
-                t = t.replace(/^Listar /i, "List ");
-                t = t.replace(/^Criar um /i, "Create a ");
-                t = t.replace(/^Criar uma /i, "Create a ");
-                t = t.replace(/^Criar /i, "Create ");
-                t = t.replace(/^Obter detalhes /i, "Get details ");
-                t = t.replace(/^Obter /i, "Get ");
-                t = t.replace(/^Atualizar /i, "Update ");
-                t = t.replace(/^Excluir /i, "Delete ");
-                t = t.replace(/^Mover /i, "Move ");
-                t = t.replace(/^Atribuir /i, "Assign ");
-                t = t.replace(/^Remover /i, "Remove ");
-                t = t.replace(/^Buscar /i, "Search ");
+                t = t.replace(/Labels/gi, "Marcadores");
+                t = t.replace(/Label/gi, "Marcador");
+                t = t.replace(/Custom Attributes/gi, "Atributos Personalizados");
+                t = t.replace(/Custom Filters/gi, "Filtros Personalizados");
+                t = t.replace(/Integrations/gi, "Integrações");
+                t = t.replace(/Integration/gi, "Integração");
+                t = t.replace(/Webhooks/gi, "Webhooks");
+                t = t.replace(/Reports/gi, "Relatórios");
+                t = t.replace(/Profile/gi, "Perfil");
+                t = t.replace(/details/gi, "detalhes");
 
-                t = t.replace(/Funis de Vendas/gi, "Funnels");
-                t = t.replace(/Itens do Kanban/gi, "Kanban Items");
-                t = t.replace(/agente/gi, "agent");
-                t = t.replace(/em massa/gi, "in bulk");
-                t = t.replace(/etapa/gi, "stage");
+                // Descrições de Parâmetros comuns
+                t = t.replace(/The numeric ID of the/gi, "O ID numérico da(o)");
+                t = t.replace(/The ID of the/gi, "O ID da(o)");
+                t = t.replace(/ID of the/gi, "ID da(o)");
+                t = t.replace(/Page number/gi, "Número da página");
+                t = t.replace(/Filter by/gi, "Filtrar por");
+                t = t.replace(/Sort by/gi, "Ordenar por");
+                t = t.replace(/available/gi, "disponível");
+                t = t.replace(/in the/gi, "no(a)");
+                t = t.replace(/of an/gi, "de um(a)");
+                t = t.replace(/of the/gi, "do(a)");
             }
             return t;
         }
@@ -433,14 +453,16 @@
             });
         }
 
-        window.copyToClipboard = function(text, btnId) {
-            navigator.clipboard.writeText(text).then(() => {
-                const btn = document.getElementById(btnId);
-                if(btn) {
-                    const originalHtml = btn.innerHTML;
-                    btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i>';
-                    setTimeout(() => btn.innerHTML = originalHtml, 2000);
-                }
+        // Nova Lógica Segura para Copiar cURL (lendo de data-attribute)
+        window.copyCurl = function(btn) {
+            const textToCopy = decodeURIComponent(btn.getAttribute('data-curl'));
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-emerald-500"></i>';
+                setTimeout(() => btn.innerHTML = originalHtml, 2000);
+            }).catch(err => {
+                console.error("Erro ao copiar: ", err);
+                alert("Ocorreu um erro ao copiar o comando.");
             });
         }
 
@@ -467,7 +489,7 @@
         }
 
         // ==========================================
-        // 3. PARSER DO OPENAPI (CORRIGIDO)
+        // 3. PARSER DO OPENAPI
         // ==========================================
         function resolveRef(ref, spec) {
             if(!ref) return null;
@@ -520,7 +542,6 @@
                 Object.keys(rawSpec.paths).forEach(path => {
                     const pathItem = rawSpec.paths[path];
                     
-                    // Extrai parâmetros do nível PATH (Ex: account_id)
                     const pathLevelParams = pathItem.parameters || [];
                     
                     Object.keys(pathItem).forEach(method => {
@@ -531,14 +552,11 @@
                         
                         if(!categories[tagName]) categories[tagName] = { name: tagName, description: '', endpoints: [] };
 
-                        // Junta parâmetros Path-Level e Operation-Level
                         const opLevelParams = op.parameters || [];
                         const rawParams = [...pathLevelParams, ...opLevelParams];
                         
-                        // Resolve as referências ($ref) dos parâmetros
                         const resolvedParams = rawParams.map(p => p.$ref ? (resolveRef(p.$ref, rawSpec) || p) : p);
                         
-                        // Deduplica parâmetros pelo nome e localização para evitar falhas
                         const paramMap = new Map();
                         resolvedParams.forEach(p => {
                             if (p && p.name && p.in) {
@@ -618,7 +636,7 @@
                         <ul class="space-y-1">
                 `;
                 cat.endpoints.forEach(ep => {
-                    const translatedSum = translateEndpointTitle(ep.summary, currentLang);
+                    const translatedSum = translateText(ep.summary, currentLang);
                     html += `
                         <li>
                             <a href="#${ep.id}" class="sidebar-link block px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 rounded-md transition-colors" data-search="${translatedSum.toLowerCase()} ${ep.path.toLowerCase()}">
@@ -634,12 +652,15 @@
 
         function renderMainContent(data) {
             const uiText = uiTranslations[currentLang];
-            const displayToken = globalToken || 'SEU_TOKEN_AQUI'; // <--- CORREÇÃO DE TOKEN DINÂMICO
+            const displayToken = globalToken || 'SEU_TOKEN_AQUI'; 
+            
+            // Tradução do Descritivo Principal da API
+            const infoDesc = translateText(data.info.description, currentLang);
             
             let html = `
                 <div class="mb-16 border-b border-gray-200 dark:border-gray-800 pb-12 pt-8">
                     <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">${data.info.title || 'API Documentation'}</h1>
-                    <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl prose dark:prose-invert">${data.info.description ? data.info.description.replace(/\n/g, '<br>') : ''}</p>
+                    <p class="text-lg text-gray-600 dark:text-gray-400 max-w-3xl prose dark:prose-invert">${infoDesc ? infoDesc.replace(/\n/g, '<br>') : ''}</p>
                     
                     <div class="mt-8 flex flex-col md:flex-row gap-4 items-center p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700 max-w-2xl">
                         <div class="flex items-center flex-1 w-full">
@@ -661,7 +682,8 @@
                 
                 cat.endpoints.forEach(ep => {
                     const style = getMethodStyle(ep.method);
-                    const translatedSum = translateEndpointTitle(ep.summary, currentLang);
+                    const translatedSum = translateText(ep.summary, currentLang);
+                    const translatedDesc = translateText(ep.description, currentLang);
                     
                     const pathParams = ep.parameters.filter(p => p.in === 'path');
                     const queryParams = ep.parameters.filter(p => p.in === 'query');
@@ -672,6 +694,7 @@
                         paramsHtml += `<h4 class="text-sm font-semibold text-gray-900 dark:text-white mt-8 mb-4 border-b border-gray-200 dark:border-gray-800 pb-2">${uiText.params}</h4>`;
                         paramsHtml += `<ul class="space-y-4">`;
                         [...pathParams, ...queryParams].forEach(p => {
+                            const translatedParamDesc = translateText(p.description, currentLang);
                             paramsHtml += `
                                 <li class="flex flex-col border-b border-gray-100 dark:border-gray-800/50 pb-4 last:border-0">
                                     <div class="flex items-center gap-2 mb-1">
@@ -679,20 +702,23 @@
                                         <span class="text-[10px] px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500">${p.in === 'query' ? 'Query' : 'Path'}</span>
                                         ${p.required ? `<span class="text-[10px] uppercase font-bold text-rose-500">${uiText.required}</span>` : `<span class="text-[10px] uppercase text-gray-400">${uiText.optional}</span>`}
                                     </div>
-                                    <span class="text-sm text-gray-600 dark:text-gray-400">${p.description || uiText.noDesc}</span>
+                                    <span class="text-sm text-gray-600 dark:text-gray-400">${translatedParamDesc || uiText.noDesc}</span>
                                 </li>
                             `;
                         });
                         paramsHtml += `</ul>`;
                     }
 
-                    // Códigos cURL (Usa o Token atualizado da variável global)
+                    // Códigos cURL
                     const jsonBodyStr = ep.bodyExample ? JSON.stringify(ep.bodyExample, null, 2) : '';
                     const escapedBodyStr = jsonBodyStr.replace(/'/g, "'\\''"); 
                     let curlCode = `curl -X ${ep.method} "${ep.fullUrl}" \\\n  -H "api_access_token: ${displayToken}"`;
                     if(ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
                         curlCode += ` \\\n  -H "Content-Type: application/json" \\\n  -d '${escapedBodyStr || '{}'}'`;
                     }
+
+                    // Encoding Seguro do Curl para o Data Attribute
+                    const encodedCurl = encodeURIComponent(curlCode);
 
                     // Formulário de Teste (Playground)
                     let testInputsHtml = '';
@@ -712,7 +738,6 @@
                     });
 
                     let bodyEditorHtml = '';
-                    // Mostra o editor de Body sempre em POST/PUT/PATCH para permitir envio de JSON manual
                     if (ep.method === 'POST' || ep.method === 'PUT' || ep.method === 'PATCH') {
                         const defaultBodyValue = jsonBodyStr || '{\n  \n}';
                         bodyEditorHtml = `
@@ -723,7 +748,6 @@
                         `;
                     }
 
-                    // LAYOUT DE 2 COLUNAS
                     html += `
                         <div id="${ep.id}" class="endpoint-card pt-12 pb-16 border-b border-gray-100 dark:border-gray-800/50 flex flex-col xl:flex-row gap-12">
                             
@@ -738,7 +762,7 @@
                                 </div>
 
                                 <div class="text-sm text-gray-600 dark:text-gray-400 prose dark:prose-invert">
-                                    ${ep.description ? ep.description.replace(/\n/g, '<br>') : ''}
+                                    ${translatedDesc ? translatedDesc.replace(/\n/g, '<br>') : ''}
                                 </div>
 
                                 ${paramsHtml}
@@ -754,7 +778,7 @@
                                 <div id="view-code-${ep.id}" class="flex flex-col">
                                     <div class="bg-[#1f2937] px-4 py-2 flex items-center justify-between border-b border-gray-800">
                                         <span class="text-xs font-medium text-gray-400">${uiText.requestExample}</span>
-                                        <button id="copy-curl-${ep.id}" onclick="copyToClipboard(\`${curlCode.replace(/`/g, '\\`')}\`, 'copy-curl-${ep.id}')" class="text-gray-400 hover:text-white transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
+                                        <button onclick="copyCurl(this)" data-curl="${encodedCurl}" class="text-gray-400 hover:text-white transition-colors" title="Copiar"><i class="fa-solid fa-copy"></i></button>
                                     </div>
                                     <div class="p-4 bg-[#111827] overflow-x-auto">
                                         <pre><code class="text-sm text-gray-300 font-mono">${curlCode}</code></pre>
@@ -932,7 +956,7 @@
                 btn.innerHTML = '<i class="fa-solid fa-check"></i>';
                 setTimeout(() => btn.innerText = originalText, 1500);
 
-                loadApiSpec(); // Chama a re-renderização, que agora usa o token!
+                loadApiSpec(); 
             });
         }
 
